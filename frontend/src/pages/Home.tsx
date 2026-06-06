@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Code2, ListChecks, PenLine, ArrowRight, BookOpen, Sparkles, Zap, Flame, Calendar } from 'lucide-react';
+import { Code2, ListChecks, PenLine, ArrowRight, BookOpen, Sparkles, Zap, Flame, Calendar, CheckCircle, AlertTriangle, Clock, RefreshCw } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import ProblemCard from '../components/ProblemCard';
+import SubmissionStatus from '../components/SubmissionStatus';
 import type { ProblemStats, Problem } from '../types';
 
 function AnimatedNumber({ target }: { target: number }) {
@@ -47,6 +48,8 @@ export default function Home() {
   const [recentProblems, setRecentProblems] = useState<Problem[]>([]);
   const [daily, setDaily] = useState<{ problem: Problem; date: string } | null>(null);
   const [dailyLoading, setDailyLoading] = useState(true);
+  const [recentSubmissions, setRecentSubmissions] = useState<any[]>([]);
+  const [submissionsLoading, setSubmissionsLoading] = useState(true);
 
   useEffect(() => {
     api.problems.stats().then(setStats).catch(() => {});
@@ -63,7 +66,14 @@ export default function Home() {
       })
       .catch(() => {})
       .finally(() => setDailyLoading(false));
-  }, []);
+    if (user) {
+      api.auth.recentSubmissions().then(res => {
+        if (res.submissions) setRecentSubmissions(res.submissions);
+      }).catch(() => {}).finally(() => setSubmissionsLoading(false));
+    } else {
+      setSubmissionsLoading(false);
+    }
+  }, [user]);
 
   const tagCounts: Record<string, number> = {};
   recentProblems.forEach((p) => {
@@ -187,6 +197,41 @@ export default function Home() {
           ))}
         </div>
       </section>
+
+      {/* Recent Submissions */}
+      {user && (recentSubmissions.length > 0 || submissionsLoading) && (
+        <section className="pb-16">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-bold text-white">最近提交</h2>
+            <Link to="/submissions" className="text-sm text-primary-400 hover:text-primary-300 inline-flex items-center gap-1 transition-colors">
+              查看全部 <ArrowRight size={14} />
+            </Link>
+          </div>
+          <div className="space-y-2">
+            {submissionsLoading ? (
+              Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="card p-4 animate-pulse flex items-center gap-4">
+                  <div className="w-6 h-6 bg-dark-700 rounded" />
+                  <div className="h-4 bg-dark-700 rounded w-1/3" />
+                  <div className="h-4 bg-dark-700 rounded w-1/6 ml-auto" />
+                </div>
+              ))
+            ) : (
+              recentSubmissions.map((s: any) => (
+                <Link
+                  key={s.id}
+                  to={`/submissions`}
+                  className="card p-4 flex items-center gap-4 hover:border-primary-500/40 transition-all duration-200"
+                >
+                  <SubmissionStatus status={s.status} score={s.score} />
+                  <span className="flex-1 text-white text-sm truncate">{s.problem_title}</span>
+                  <span className="text-xs text-dark-400">{s.created_at?.slice(0, 16).replace('T', ' ')}</span>
+                </Link>
+              ))
+            )}
+          </div>
+        </section>
+      )}
 
       {/* Recent Problems */}
       {recentProblems.length > 0 && (

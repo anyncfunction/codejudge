@@ -37,6 +37,7 @@ const api = {
     leaderboard: () => request<any[]>('/auth/leaderboard'),
     changePassword: (body: { currentPassword: string; newPassword: string }) =>
       request<{ message: string }>('/auth/password', { method: 'PUT', body: JSON.stringify(body) }),
+    recentSubmissions: () => request<{ submissions: any[] }>('/auth/recent-submissions'),
   },
 
   problems: {

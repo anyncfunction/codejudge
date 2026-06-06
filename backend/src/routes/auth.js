@@ -44,6 +44,18 @@ router.get('/language-stats', authenticate, (req, res) => {
   res.json({ languages: stats });
 });
 
+router.get('/recent-submissions', authenticate, (req, res) => {
+  const rows = queryAll(`
+    SELECT s.id, s.problem_id, s.status, s.score, s.created_at, p.title as problem_title
+    FROM submissions s
+    JOIN problems p ON p.id = s.problem_id
+    WHERE s.user_id = ?
+    ORDER BY s.created_at DESC
+    LIMIT 5
+  `, [req.user.id]);
+  res.json({ submissions: rows });
+});
+
 router.get('/leaderboard', async (req, res) => {
   try {
     const rows = queryAll(`
