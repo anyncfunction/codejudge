@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { User, Mail, Shield, Award, TrendingUp, Loader2, AlertTriangle, CheckCircle2, XCircle, Clock, Zap, Lock, Key, CalendarDays, Code, PieChart } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { User, Mail, Shield, Award, TrendingUp, Loader2, AlertTriangle, CheckCircle2, XCircle, Clock, Zap, Lock, Key, CalendarDays, Code, PieChart, Trash2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
+import toast from 'react-hot-toast';
 import type { Submission } from '../types';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import GamificationSection from '../components/GamificationSection';
@@ -38,7 +39,8 @@ const STATUS_MAP: Record<string, { label: string; icon: React.ReactNode; classNa
 
 export default function Profile() {
   useDocumentTitle('个人中心');
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState<any>(null);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [loading, setLoading] = useState(true);
@@ -422,6 +424,29 @@ export default function Profile() {
             </button>
           </form>
         )}
+      </div>
+
+      {/* Delete Account */}
+      <div className="card p-6 border-red-600/20">
+        <button
+          onClick={async () => {
+            if (window.confirm('确定要删除账户吗？所有提交记录也将被永久删除。此操作不可撤销。')) {
+              try {
+                await api.auth.deleteAccount();
+                toast.success('账户已删除');
+                logout();
+                navigate('/');
+              } catch (err: any) {
+                toast.error(err.message || '删除失败');
+              }
+            }
+          }}
+          className="flex items-center gap-2 text-sm font-medium text-red-400 hover:text-red-300 transition-colors"
+        >
+          <Trash2 className="w-4 h-4" />
+          删除账户
+        </button>
+        <p className="text-xs text-dark-500 mt-2">删除后不可恢复，所有数据将被清除</p>
       </div>
 
       {/* Recent submissions */}

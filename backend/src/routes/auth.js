@@ -7,6 +7,11 @@ router.post('/register', register);
 router.post('/login', login);
 router.get('/profile', authenticate, getProfile);
 router.put('/password', authenticate, changePassword);
+router.delete('/profile', authenticate, (req, res) => {
+  run('DELETE FROM submissions WHERE user_id = ?', [req.user.id]);
+  run('DELETE FROM users WHERE id = ?', [req.user.id]);
+  res.json({ message: '账户已删除' });
+});
 
 router.get('/solved-calendar', authenticate, (req, res) => {
   const rows = queryAll(

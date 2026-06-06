@@ -38,6 +38,7 @@ const api = {
     changePassword: (body: { currentPassword: string; newPassword: string }) =>
       request<{ message: string }>('/auth/password', { method: 'PUT', body: JSON.stringify(body) }),
     recentSubmissions: () => request<{ submissions: any[] }>('/auth/recent-submissions'),
+    deleteAccount: () => request<{ message: string }>('/auth/profile', { method: 'DELETE' }),
   },
 
   problems: {
