@@ -6,6 +6,7 @@ import api from '../services/api';
 import type { Submission } from '../types';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import GamificationSection from '../components/GamificationSection';
+import DailyGoal from '../components/DailyGoal';
 
 const STATUS_MAP: Record<string, { label: string; icon: React.ReactNode; className: string }> = {
   accepted: {
@@ -284,6 +285,7 @@ export default function Profile() {
         </div>
       )}
 
+      <DailyGoal />
       <GamificationSection />
 
       {/* Solved calendar */}
