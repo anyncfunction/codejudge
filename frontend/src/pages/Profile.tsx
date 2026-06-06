@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { User, Mail, Shield, Award, TrendingUp, Loader2, AlertTriangle, CheckCircle2, XCircle, Clock, Zap } from 'lucide-react';
+import { User, Mail, Shield, Award, TrendingUp, Loader2, AlertTriangle, CheckCircle2, XCircle, Clock, Zap, Lock, Key } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import type { Submission } from '../types';
@@ -39,6 +39,13 @@ export default function Profile() {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showPasswordForm, setShowPasswordForm] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordLoading, setPasswordLoading] = useState(false);
+  const [passwordMessage, setPasswordMessage] = useState<string | null>(null);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
 
   useEffect(() => {
     async function load() {
@@ -177,6 +184,110 @@ export default function Profile() {
           </p>
           <p className="text-2xl font-bold text-purple-400">{uniqueProblems}</p>
         </div>
+      </div>
+
+      {/* Password change */}
+      <div className="card p-6">
+        <button
+          onClick={() => {
+            setShowPasswordForm(!showPasswordForm);
+            setPasswordMessage(null);
+            setPasswordError(null);
+            setCurrentPassword('');
+            setNewPassword('');
+            setConfirmPassword('');
+          }}
+          className="flex items-center gap-2 text-sm font-medium text-gray-300 hover:text-white transition-colors"
+        >
+          <Lock className="w-4 h-4" />
+          {showPasswordForm ? '收起修改密码' : '修改密码'}
+        </button>
+        {showPasswordForm && (
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              setPasswordError(null);
+              setPasswordMessage(null);
+
+              if (!currentPassword || !newPassword || !confirmPassword) {
+                setPasswordError('请填写所有字段');
+                return;
+              }
+              if (newPassword.length < 6) {
+                setPasswordError('新密码长度至少6位');
+                return;
+              }
+              if (newPassword !== confirmPassword) {
+                setPasswordError('两次输入的新密码不一致');
+                return;
+              }
+
+              setPasswordLoading(true);
+              try {
+                await api.auth.changePassword({ currentPassword, newPassword });
+                setPasswordMessage('密码修改成功');
+                setCurrentPassword('');
+                setNewPassword('');
+                setConfirmPassword('');
+              } catch (err: any) {
+                setPasswordError(err.message || '修改失败');
+              } finally {
+                setPasswordLoading(false);
+              }
+            }}
+            className="mt-4 space-y-3"
+          >
+            <div>
+              <label className="block text-sm text-dark-400 mb-1">当前密码</label>
+              <input
+                type="password"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                className="input w-full"
+                placeholder="输入当前密码"
+              />
+            </div>
+            <div>
+              <label className="block text-sm text-dark-400 mb-1">新密码</label>
+              <input
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="input w-full"
+                placeholder="输入新密码（至少6位）"
+              />
+            </div>
+            <div>
+              <label className="block text-sm text-dark-400 mb-1">确认新密码</label>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="input w-full"
+                placeholder="再次输入新密码"
+              />
+            </div>
+
+            {passwordError && (
+              <p className="text-red-400 text-sm flex items-center gap-1">
+                <AlertTriangle className="w-3.5 h-3.5" />
+                {passwordError}
+              </p>
+            )}
+            {passwordMessage && (
+              <p className="text-emerald-400 text-sm flex items-center gap-1">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                {passwordMessage}
+              </p>
+            )}
+
+            <button type="submit" disabled={passwordLoading} className="btn-primary flex items-center gap-2">
+              {passwordLoading && <Loader2 className="w-4 h-4 animate-spin" />}
+              <Key className="w-4 h-4" />
+              确认修改
+            </button>
+          </form>
+        )}
       </div>
 
       {/* Recent submissions */}

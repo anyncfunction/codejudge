@@ -30,6 +30,8 @@ const api = {
       request<{ token: string; user: import('../types').User }>('/auth/login', { method: 'POST', body: JSON.stringify(body) }),
     profile: () => request<import('../types').User>('/auth/profile'),
     leaderboard: () => request<any[]>('/auth/leaderboard'),
+    changePassword: (body: { currentPassword: string; newPassword: string }) =>
+      request<{ message: string }>('/auth/password', { method: 'PUT', body: JSON.stringify(body) }),
   },
 
   problems: {

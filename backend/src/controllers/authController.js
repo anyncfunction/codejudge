@@ -50,4 +50,23 @@ function getProfile(req, res) {
   res.json({ ...user, stats: { total: totalRow.count, accepted: acceptedRow.count } });
 }
 
-module.exports = { register, login, getProfile };
+function changePassword(req, res) {
+  const { currentPassword, newPassword } = req.body;
+  if (!currentPassword || !newPassword) {
+    return res.status(400).json({ error: '请提供当前密码和新密码' });
+  }
+  if (newPassword.length < 6) {
+    return res.status(400).json({ error: '新密码长度至少6位' });
+  }
+
+  const user = queryOne('SELECT * FROM users WHERE id = ?', [req.user.id]);
+  if (!bcrypt.compareSync(currentPassword, user.password)) {
+    return res.status(400).json({ error: '当前密码错误' });
+  }
+
+  const hashed = bcrypt.hashSync(newPassword, 10);
+  run('UPDATE users SET password = ? WHERE id = ?', [hashed, req.user.id]);
+  res.json({ message: '密码修改成功' });
+}
+
+module.exports = { register, login, getProfile, changePassword };

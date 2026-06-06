@@ -1,11 +1,12 @@
 const router = require('express').Router();
-const { register, login, getProfile } = require('../controllers/authController');
+const { register, login, getProfile, changePassword } = require('../controllers/authController');
 const { authenticate } = require('../middleware/auth');
 const { queryAll } = require('../config/db');
 
 router.post('/register', register);
 router.post('/login', login);
 router.get('/profile', authenticate, getProfile);
+router.put('/password', authenticate, changePassword);
 
 router.get('/leaderboard', async (req, res) => {
   try {
