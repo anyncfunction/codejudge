@@ -3,5 +3,9 @@ dist/
 data/
 *.db
 .env
+.env.local
+*.log
+*.tsbuildinfo
 .DS_Store
 Thumbs.db
+.vscode/
