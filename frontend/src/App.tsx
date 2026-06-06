@@ -9,6 +9,7 @@ import Submissions from './pages/Submissions';
 import Admin from './pages/Admin';
 import AdminProblemForm from './pages/AdminProblemForm';
 import Leaderboard from './pages/Leaderboard';
+import Profile from './pages/Profile';
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
           <Route path="/problems" element={<Problems />} />
           <Route path="/problems/:id" element={<ProblemDetail />} />
           <Route path="/submissions" element={<Submissions />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/admin/problems/new" element={<AdminProblemForm />} />
           <Route path="/admin/problems/:id/edit" element={<AdminProblemForm />} />

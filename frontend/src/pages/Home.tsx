@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Code2, ListChecks, PenLine, ArrowRight, BookOpen } from 'lucide-react';
+import { Code2, ListChecks, PenLine, ArrowRight, BookOpen, Sparkles, Zap, Flame } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import ProblemCard from '../components/ProblemCard';
@@ -151,6 +151,43 @@ export default function Home() {
           </div>
         </section>
       )}
+
+      {/* Difficulty CTA */}
+      <section className="pb-16">
+        <h2 className="text-xl font-bold text-white mb-6">按难度刷题</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Link
+            to="/problems?difficulty=easy"
+            className="card p-6 group hover:border-emerald-500/40 transition-all duration-200"
+          >
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-emerald-500/10 mb-3">
+              <Sparkles size={24} className="text-emerald-400" />
+            </div>
+            <h3 className="text-lg font-semibold text-emerald-400 group-hover:text-emerald-300">从简单开始</h3>
+            <p className="text-gray-500 text-sm mt-1">适合新手入门，巩固基础</p>
+          </Link>
+          <Link
+            to="/problems?difficulty=medium"
+            className="card p-6 group hover:border-amber-500/40 transition-all duration-200"
+          >
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-amber-500/10 mb-3">
+              <Zap size={24} className="text-amber-400" />
+            </div>
+            <h3 className="text-lg font-semibold text-amber-400 group-hover:text-amber-300">挑战中等</h3>
+            <p className="text-gray-500 text-sm mt-1">提升算法思维，突破瓶颈</p>
+          </Link>
+          <Link
+            to="/problems?difficulty=hard"
+            className="card p-6 group hover:border-red-500/40 transition-all duration-200"
+          >
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-red-500/10 mb-3">
+              <Flame size={24} className="text-red-400" />
+            </div>
+            <h3 className="text-lg font-semibold text-red-400 group-hover:text-red-300">勇闯困难</h3>
+            <p className="text-gray-500 text-sm mt-1">攻克高阶难题，冲刺面试</p>
+          </Link>
+        </div>
+      </section>
     </>
   );
 }

@@ -149,6 +149,17 @@ export default function ProblemDetail() {
     }
   };
 
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        handleSubmit();
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [handleSubmit]);
+
   const renderResultPanel = () => {
     if (!submissionResult || !problem) return null;
 
@@ -430,23 +441,26 @@ export default function ProblemDetail() {
               />
             )}
 
-            <button
-              onClick={handleSubmit}
-              disabled={submitting}
-              className="btn-primary mt-4 inline-flex items-center gap-2"
-            >
-              {submitting ? (
-                <>
-                  <Loader2 size={18} className="animate-spin" />
-                  提交中...
-                </>
-              ) : (
-                <>
-                  <Play size={18} />
-                  提交
-                </>
-              )}
-            </button>
+            <div className="flex items-center gap-3 mt-4">
+              <button
+                onClick={handleSubmit}
+                disabled={submitting}
+                className="btn-primary inline-flex items-center gap-2"
+              >
+                {submitting ? (
+                  <>
+                    <Loader2 size={18} className="animate-spin" />
+                    提交中...
+                  </>
+                ) : (
+                  <>
+                    <Play size={18} />
+                    提交
+                  </>
+                )}
+              </button>
+              <span className="text-xs text-dark-400">Ctrl+Enter 快速提交</span>
+            </div>
           </div>
 
           {/* Result panel */}

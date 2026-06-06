@@ -41,10 +41,10 @@ export default function Navbar() {
         <div className="flex items-center gap-3">
           {user ? (
             <>
-              <div className="flex items-center gap-2 text-dark-300">
+              <Link to="/profile" className="flex items-center gap-2 text-dark-300 hover:text-white transition-colors">
                 <User className="w-4 h-4" />
                 <span className="text-sm font-medium">{user.username}</span>
-              </div>
+              </Link>
               {user.role === 'admin' && (
                 <Link
                   to="/admin"

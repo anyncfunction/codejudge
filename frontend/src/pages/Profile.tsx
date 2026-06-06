@@ -1,0 +1,232 @@
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { User, Mail, Shield, Award, TrendingUp, Loader2, AlertTriangle, CheckCircle2, XCircle, Clock, Zap } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import api from '../services/api';
+import type { Submission } from '../types';
+
+const STATUS_MAP: Record<string, { label: string; icon: React.ReactNode; className: string }> = {
+  accepted: {
+    label: '通过',
+    icon: <CheckCircle2 className="w-3.5 h-3.5" />,
+    className: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
+  },
+  wrong_answer: {
+    label: '答案错误',
+    icon: <XCircle className="w-3.5 h-3.5" />,
+    className: 'bg-red-500/15 text-red-400 border-red-500/30',
+  },
+  runtime_error: {
+    label: '运行错误',
+    icon: <AlertTriangle className="w-3.5 h-3.5" />,
+    className: 'bg-orange-500/15 text-orange-400 border-orange-500/30',
+  },
+  compile_error: {
+    label: '编译错误',
+    icon: <Zap className="w-3.5 h-3.5" />,
+    className: 'bg-yellow-500/15 text-yellow-400 border-yellow-500/30',
+  },
+  time_limit: {
+    label: '超时',
+    icon: <Clock className="w-3.5 h-3.5" />,
+    className: 'bg-purple-500/15 text-purple-400 border-purple-500/30',
+  },
+};
+
+export default function Profile() {
+  const { user } = useAuth();
+  const [profile, setProfile] = useState<any>(null);
+  const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function load() {
+      setLoading(true);
+      setError(null);
+      try {
+        const [profileData, subData] = await Promise.all([
+          api.auth.profile(),
+          api.submissions.list({ page: 1 }),
+        ]);
+        setProfile(profileData);
+        setSubmissions(subData.submissions ?? []);
+      } catch (err: any) {
+        setError(err.message || '加载失败');
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="card p-8 animate-pulse space-y-4">
+        <div className="h-7 bg-dark-700 rounded w-1/3" />
+        <div className="h-4 bg-dark-700 rounded w-1/2" />
+        <div className="flex gap-4 mt-6">
+          <div className="h-24 bg-dark-700 rounded flex-1" />
+          <div className="h-24 bg-dark-700 rounded flex-1" />
+          <div className="h-24 bg-dark-700 rounded flex-1" />
+          <div className="h-24 bg-dark-700 rounded flex-1" />
+        </div>
+        <div className="h-4 bg-dark-700 rounded w-1/4 mt-6" />
+        <div className="space-y-3">
+          <div className="h-14 bg-dark-700 rounded" />
+          <div className="h-14 bg-dark-700 rounded" />
+          <div className="h-14 bg-dark-700 rounded" />
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="card p-10 text-center">
+        <AlertTriangle size={40} className="mx-auto text-red-400 mb-3" />
+        <p className="text-red-400 mb-4">{error}</p>
+        <button onClick={() => window.location.reload()} className="btn-primary">
+          重试
+        </button>
+      </div>
+    );
+  }
+
+  if (!user || !profile) {
+    return (
+      <div className="card p-10 text-center">
+        <AlertTriangle size={40} className="mx-auto text-yellow-400 mb-3" />
+        <p className="text-gray-300 mb-4">请先登录</p>
+        <Link to="/login" className="btn-primary">
+          前往登录
+        </Link>
+      </div>
+    );
+  }
+
+  const stats = profile.stats || { total: 0, accepted: 0 };
+  const acceptanceRate = stats.total > 0 ? Math.round((stats.accepted / stats.total) * 100) : 0;
+  const uniqueProblems = new Set(submissions.map((s) => s.problem_id)).size;
+
+  const formatDate = (dateStr: string) => {
+    if (!dateStr) return '-';
+    return new Date(dateStr).toLocaleDateString('zh-CN', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    });
+  };
+
+  return (
+    <div className="max-w-3xl mx-auto space-y-6">
+      {/* User info card */}
+      <div className="card p-6">
+        <div className="flex items-center gap-4">
+          <div className="w-16 h-16 rounded-full bg-blue-600/20 border border-blue-600/30 flex items-center justify-center">
+            <User className="w-8 h-8 text-blue-400" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h1 className="text-2xl font-bold text-white truncate">
+              {profile.username || user.username}
+            </h1>
+            <div className="flex flex-wrap items-center gap-4 mt-1.5 text-sm text-dark-300">
+              <span className="flex items-center gap-1.5">
+                <Mail className="w-3.5 h-3.5" />
+                {profile.email || user.email}
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Shield className="w-3.5 h-3.5" />
+                {profile.role === 'admin' ? '管理员' : '用户'}
+              </span>
+              {profile.created_at && (
+                <span className="flex items-center gap-1.5">
+                  <Award className="w-3.5 h-3.5" />
+                  加入于 {formatDate(profile.created_at)}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Stats cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="card p-4 text-center">
+          <p className="text-dark-400 text-xs uppercase tracking-wide mb-1">
+            总提交
+          </p>
+          <p className="text-2xl font-bold text-white">{stats.total}</p>
+        </div>
+        <div className="card p-4 text-center">
+          <p className="text-dark-400 text-xs uppercase tracking-wide mb-1">
+            通过
+          </p>
+          <p className="text-2xl font-bold text-emerald-400">{stats.accepted}</p>
+        </div>
+        <div className="card p-4 text-center">
+          <p className="text-dark-400 text-xs uppercase tracking-wide mb-1">
+            通过率
+          </p>
+          <p className="text-2xl font-bold text-blue-400">{acceptanceRate}%</p>
+        </div>
+        <div className="card p-4 text-center">
+          <p className="text-dark-400 text-xs uppercase tracking-wide mb-1 flex items-center justify-center gap-1">
+            <TrendingUp className="w-3 h-3" />
+            已解题目
+          </p>
+          <p className="text-2xl font-bold text-purple-400">{uniqueProblems}</p>
+        </div>
+      </div>
+
+      {/* Recent submissions */}
+      <div className="card p-6">
+        <h2 className="text-lg font-semibold text-white mb-4">最近提交</h2>
+        {submissions.length === 0 ? (
+          <p className="text-dark-400 text-sm text-center py-6">
+            暂无提交记录
+          </p>
+        ) : (
+          <div className="space-y-3">
+            {submissions.map((sub) => {
+              const statusConfig = STATUS_MAP[sub.status] || {
+                label: sub.status,
+                icon: null,
+                className: 'bg-dark-700 text-dark-400 border-dark-600',
+              };
+              return (
+                <div
+                  key={sub.id}
+                  className="flex items-center justify-between bg-dark-800/50 rounded-lg p-3"
+                >
+                  <div className="min-w-0 flex-1">
+                    <Link
+                      to={`/problems/${sub.problem_id}`}
+                      className="text-white hover:text-blue-400 transition-colors text-sm font-medium truncate block"
+                    >
+                      {sub.problem_title || `题目 #${sub.problem_id}`}
+                    </Link>
+                    <p className="text-dark-400 text-xs mt-0.5">
+                      {formatDate(sub.created_at)}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3 ml-4">
+                    <span
+                      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs border ${statusConfig.className}`}
+                    >
+                      {statusConfig.icon}
+                      {statusConfig.label}
+                    </span>
+                    <span className="text-primary-400 text-sm font-semibold w-12 text-right">
+                      {sub.score}分
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

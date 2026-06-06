@@ -6,37 +6,25 @@ const os = require('os');
 const TIMEOUT_MS = 8000;
 
 const TEMPLATES = {
-  javascript: `// 输入数据通过标准输入(stdin)提供
-// 使用 console.log 输出结果
-const readline = require('readline');
-const rl = readline.createInterface({ input: process.stdin });
-const lines = [];
-rl.on('line', (line) => lines.push(line));
-rl.on('close', () => {
-  // 在这里编写你的代码，使用 lines 读取输入
-  // 使用 console.log() 输出结果
-  solve(lines);
-});
+  javascript: `// 读取标准输入
+const input = require('fs').readFileSync(0, 'utf-8').trim().split('\\n');
+// 在这里处理数据
+// 使用 console.log() 输出结果
 
-function solve(lines) {
-  // TODO: 实现你的算法
-  console.log(lines.join(' '));
-}
+// 示例：读取第一行作为数组
+// const nums = input[0].split(' ').map(Number);
+// console.log(nums.reduce((a, b) => a + b, 0));
 `,
 
-  python: `# 输入数据通过标准输入(stdin)提供
-# 使用 print() 输出结果
+  python: `# 读取标准输入
 import sys
+data = sys.stdin.read().strip().split('\\n')
+# 在这里处理数据
+# 使用 print() 输出结果
 
-def solve():
-    lines = sys.stdin.read().strip().split('\\n')
-    # 在这里编写你的代码，使用 lines 读取输入
-    # 使用 print() 输出结果
-    # TODO: 实现你的算法
-    print(' '.join(lines))
-
-if __name__ == '__main__':
-    solve()
+# 示例：读取第一行作为数组
+# nums = list(map(int, data[0].split()))
+# print(sum(nums))
 `,
 };
 

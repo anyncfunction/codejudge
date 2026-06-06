@@ -142,7 +142,7 @@ async function seed() {
     const desc = descriptions[t.title] || t.title;
     insertOne(
       title,
-      `## ${title}\n\n### 题目描述\n${desc}\n\n### 输入格式\n第一行包含测试数据\n\n### 输出格式\n输出计算结果`,
+      `## ${title}\n\n### 问题描述\n${desc}\n\n### 输入格式\n从标准输入读取数据，具体格式根据题目而定\n\n### 输出格式\n将计算结果输出到标准输出`,
       'programming',
       difficulty,
       t.tags,
