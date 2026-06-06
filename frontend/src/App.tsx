@@ -9,6 +9,7 @@ import Submissions from './pages/Submissions';
 import Admin from './pages/Admin';
 import AdminProblemForm from './pages/AdminProblemForm';
 import Leaderboard from './pages/Leaderboard';
+import NotFound from './pages/NotFound';
 import Profile from './pages/Profile';
 
 export default function App() {
@@ -28,6 +29,7 @@ export default function App() {
           <Route path="/admin/problems/new" element={<AdminProblemForm />} />
           <Route path="/admin/problems/:id/edit" element={<AdminProblemForm />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
     </div>
