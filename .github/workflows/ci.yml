@@ -1,0 +1,27 @@
+name: CI
+on: [push, pull_request]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install backend dependencies
+        run: cd backend && npm ci
+      - name: Install frontend dependencies
+        run: cd frontend && npm ci
+      - name: TypeScript check
+        run: cd frontend && npx tsc -b --noEmit
+      - name: Frontend build
+        run: cd frontend && npx vite build
+      - name: Start server and run tests
+        run: |
+          cd backend
+          node src/app.js &
+          sleep 3
+          node --test tests/*.test.js
+        env:
+          CI: true

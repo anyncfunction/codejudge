@@ -66,8 +66,8 @@ export default function Leaderboard() {
                   <th className="text-left py-3 px-4 text-dark-400 text-sm font-medium w-16">排名</th>
                   <th className="text-left py-3 px-4 text-dark-400 text-sm font-medium">用户</th>
                   <th className="text-center py-3 px-4 text-dark-400 text-sm font-medium">通过题数</th>
-                  <th className="text-center py-3 px-4 text-dark-400 text-sm font-medium">通过率</th>
-                  <th className="text-center py-3 px-4 text-dark-400 text-sm font-medium">总提交</th>
+                  <th className="text-center py-3 px-4 text-dark-400 text-sm font-medium hidden md:table-cell">通过率</th>
+                  <th className="text-center py-3 px-4 text-dark-400 text-sm font-medium hidden md:table-cell">总提交</th>
                 </tr>
               </thead>
               <tbody>
@@ -103,7 +103,7 @@ export default function Leaderboard() {
                       </td>
                       <td className="py-3 px-4 text-center">
                         <div className="flex items-center justify-center gap-2">
-                          <div className="w-16 h-1.5 bg-dark-700 rounded-full overflow-hidden">
+                          <div className="w-16 h-1.5 bg-dark-700 rounded-full overflow-hidden hidden md:block">
                             <div
                               className="h-full bg-primary-500 rounded-full transition-all"
                               style={{ width: `${passRate}%` }}
@@ -112,7 +112,7 @@ export default function Leaderboard() {
                           <span className="text-dark-400 text-xs">{passRate}%</span>
                         </div>
                       </td>
-                      <td className="py-3 px-4 text-center text-dark-400">
+                      <td className="py-3 px-4 text-center text-dark-400 hidden md:table-cell">
                         {entry.total_submissions}
                       </td>
                     </tr>

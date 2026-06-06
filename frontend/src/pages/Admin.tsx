@@ -170,7 +170,7 @@ export default function Admin() {
 
       {/* Admin Analytics */}
       {adminStats && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
           <div className="card p-5 flex items-center gap-4">
             <div className="p-3 bg-indigo-600/20 rounded-lg">
               <Users size={24} className="text-indigo-400" />
@@ -254,14 +254,14 @@ export default function Admin() {
           <p className="text-gray-400">暂无题目，点击上方按钮创建</p>
         </div>
       ) : (
-        <div className="card overflow-hidden">
+        <div className="card overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-dark-700">
-                <th className="text-left py-3 px-4 text-gray-400">ID</th>
+                <th className="text-left py-3 px-4 text-gray-400 hidden md:table-cell">ID</th>
                 <th className="text-left py-3 px-4 text-gray-400">标题</th>
                 <th className="text-left py-3 px-4 text-gray-400">类型</th>
-                <th className="text-left py-3 px-4 text-gray-400">难度</th>
+                <th className="text-left py-3 px-4 text-gray-400 hidden md:table-cell">难度</th>
                 <th className="text-right py-3 px-4 text-gray-400">操作</th>
               </tr>
             </thead>
@@ -271,7 +271,7 @@ export default function Admin() {
                   key={problem.id}
                   className="border-b border-dark-800 hover:bg-dark-800/50 transition-colors"
                 >
-                  <td className="py-3 px-4 text-gray-400">{problem.id}</td>
+                  <td className="py-3 px-4 text-gray-400 hidden md:table-cell">{problem.id}</td>
                   <td className="py-3 px-4 text-white font-medium">
                     {problem.title}
                   </td>
@@ -280,7 +280,7 @@ export default function Admin() {
                       {TYPE_LABELS[problem.type] || problem.type}
                     </span>
                   </td>
-                  <td className="py-3 px-4">
+                  <td className="py-3 px-4 hidden md:table-cell">
                     <span
                       className={`px-2 py-0.5 text-xs rounded text-white ${
                         DIFFICULTY_COLORS[problem.difficulty] || 'bg-gray-600'
@@ -291,7 +291,7 @@ export default function Admin() {
                     </span>
                   </td>
                   <td className="py-3 px-4 text-right">
-                    <div className="flex items-center justify-end gap-1">
+                    <div className="flex flex-col md:flex-row items-end md:items-center justify-end gap-1">
                       <button
                         onClick={() =>
                           navigate(`/admin/problems/${problem.id}/edit`)
