@@ -116,7 +116,7 @@ export default function Navbar() {
                 <User className="w-4 h-4" />
                 <span className="text-sm font-medium">{user.username}</span>
               </Link>
-              {user.role === 'admin' && (
+              {user.role === 'admin' && (<>
                 <Link
                   to="/admin"
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-primary-600/15 text-primary-400 border border-primary-600/30 hover:bg-primary-600/25 transition-colors"
@@ -127,7 +127,7 @@ export default function Navbar() {
                 <Link to="/system" className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-600/15 text-blue-400 border border-blue-600/30 hover:bg-blue-600/25 transition-colors">
                   <Activity className="w-3.5 h-3.5" /> 系统
                 </Link>
-              )}
+              </>)}
               <button
                 onClick={logout}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-dark-400 hover:text-dark-200 hover:bg-dark-800 transition-colors"
