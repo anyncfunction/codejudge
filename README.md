@@ -75,6 +75,13 @@ cd frontend
 npm run build    # 输出到 dist/，后端自动托管
 ```
 
+### 4. Docker 部署
+
+```bash
+docker compose up -d    # 一键启动
+# 访问 http://localhost:3001
+```
+
 ## 预置账户
 
 | 角色 | 邮箱 | 密码 |

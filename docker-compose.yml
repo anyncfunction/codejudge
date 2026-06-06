@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  codejudge:
+    build: .
+    ports:
+      - "3001:3001"
+    volumes:
+      - codejudge_data:/app/data
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+
+volumes:
+  codejudge_data:
