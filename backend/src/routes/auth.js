@@ -16,6 +16,26 @@ router.get('/solved-calendar', authenticate, (req, res) => {
   res.json({ dates: rows.map(r => r.date) });
 });
 
+router.get('/streak', authenticate, (req, res) => {
+  const rows = queryAll(
+    "SELECT DISTINCT DATE(created_at) as date FROM submissions WHERE user_id = ? ORDER BY date DESC LIMIT 60",
+    [req.user.id]
+  );
+  const dates = rows.map(r => r.date);
+  let streak = 0;
+  const today = new Date().toISOString().slice(0, 10);
+  const todayChecked = dates.includes(today);
+  const checkDate = new Date();
+  if (!todayChecked) checkDate.setDate(checkDate.getDate() - 1);
+  for (const d of dates) {
+    const expected = checkDate.toISOString().slice(0, 10);
+    if (d === expected) { streak++; checkDate.setDate(checkDate.getDate() - 1); }
+    else break;
+  }
+  if (todayChecked && streak === 0) streak = 1;
+  res.json({ streak, todayChecked });
+});
+
 router.get('/leaderboard', async (req, res) => {
   try {
     const rows = queryAll(`

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Edit, Trash2, Users, Code, BarChart3, AlertTriangle, Loader2, Activity, Percent, Clock } from 'lucide-react';
+import { Plus, Edit, Trash2, Users, Code, BarChart3, AlertTriangle, Loader2, Activity, Percent, Clock, Download, Upload } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
@@ -46,6 +46,36 @@ export default function Admin() {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  const handleExport = async () => {
+    try {
+      const res = await fetch('/api/problems/export', { headers: { Authorization: `Bearer ${localStorage.getItem('oj_token')}` } });
+      const data = await res.json();
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'codejudge-problems.json'; a.click();
+      URL.revokeObjectURL(url);
+      toast.success('导出成功');
+    } catch { toast.error('导出失败'); }
+  };
+
+  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const text = await file.text();
+      const data = JSON.parse(text);
+      const res = await fetch('/api/problems/import', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('oj_token')}` },
+        body: JSON.stringify(data),
+      });
+      const result = await res.json();
+      toast.success(result.message || '导入成功');
+      fetchData();
+    } catch { toast.error('导入失败，请检查文件格式'); }
+    e.target.value = '';
+  };
 
   const handleDelete = async (problemId: number, title: string) => {
     if (!window.confirm(`确定要删除题目「${title}」吗？此操作不可撤销。`)) {
@@ -186,13 +216,22 @@ export default function Admin() {
       {/* Actions */}
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold text-white">题目管理</h2>
-        <button
-          onClick={() => navigate('/admin/problems/new')}
-          className="btn-primary inline-flex items-center gap-2"
-        >
-          <Plus size={18} />
-          创建题目
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => navigate('/admin/problems/new')}
+            className="btn-primary inline-flex items-center gap-2"
+          >
+            <Plus size={18} />
+            创建题目
+          </button>
+          <button onClick={handleExport} className="btn-secondary text-sm inline-flex items-center gap-1">
+            <Download className="w-4 h-4" /> 导出
+          </button>
+          <button onClick={() => document.getElementById('importInput')?.click()} className="btn-secondary text-sm inline-flex items-center gap-1">
+            <Upload className="w-4 h-4" /> 导入
+          </button>
+          <input id="importInput" type="file" accept=".json" className="hidden" onChange={handleImport} />
+        </div>
       </div>
 
       {/* Content */}

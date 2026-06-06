@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import type { Submission } from '../types';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
+import GamificationSection from '../components/GamificationSection';
 
 const STATUS_MAP: Record<string, { label: string; icon: React.ReactNode; className: string }> = {
   accepted: {
@@ -204,6 +205,8 @@ export default function Profile() {
           <p className="text-2xl font-bold text-purple-400">{uniqueProblems}</p>
         </div>
       </div>
+
+      <GamificationSection />
 
       {/* Solved calendar */}
       <div className="card p-6">

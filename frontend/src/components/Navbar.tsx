@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Code2, User, LogOut, ShieldCheck, Dices } from 'lucide-react';
+import { Code2, User, LogOut, ShieldCheck, Dices, Menu, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export default function Navbar() {
@@ -8,6 +8,7 @@ export default function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
   const [loadingRandom, setLoadingRandom] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -47,7 +48,7 @@ export default function Navbar() {
             <span className="text-xl font-bold tracking-tight">CodeJudge</span>
           </Link>
 
-          <div className="flex items-center gap-1">
+          <div className="hidden md:flex items-center gap-1">
             {navLinks.map((link) => (
               <Link
                 key={link.to}
@@ -72,7 +73,43 @@ export default function Navbar() {
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        {mobileMenuOpen && (
+          <div className="fixed inset-0 bg-black/50 z-40 md:hidden" onClick={() => setMobileMenuOpen(false)} />
+        )}
+
+        {/* Mobile menu button */}
+        <button className="md:hidden p-2 text-dark-400 hover:text-white" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+          {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        </button>
+
+        {/* Mobile dropdown */}
+        {mobileMenuOpen && (
+          <div className="absolute top-16 left-0 right-0 bg-dark-900/95 backdrop-blur-xl border-b border-dark-800 md:hidden z-50">
+            <div className="px-4 py-3 space-y-1">
+              {navLinks.map(link => (
+                <Link key={link.to} to={link.to} onClick={() => setMobileMenuOpen(false)}
+                  className={`block px-4 py-2 rounded-lg text-sm ${location.pathname.startsWith(link.to) ? 'bg-dark-700 text-white' : 'text-dark-400 hover:text-dark-200'}`}>
+                  {link.label}
+                </Link>
+              ))}
+              <hr className="border-dark-700 my-2" />
+              {user ? (
+                <>
+                  <span className="block px-4 py-2 text-sm text-dark-300">{user.username}</span>
+                  {user.role === 'admin' && <Link to="/admin" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-2 text-sm text-primary-400">管理中心</Link>}
+                  <button onClick={() => { logout(); setMobileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-sm text-dark-400">退出登录</button>
+                </>
+              ) : (
+                <>
+                  <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-2 text-sm text-dark-200">登录</Link>
+                  <Link to="/register" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-2 text-sm text-primary-400">注册</Link>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+
+        <div className="hidden md:flex items-center gap-3">
           {user ? (
             <>
               <Link to="/profile" className="flex items-center gap-2 text-dark-300 hover:text-white transition-colors">

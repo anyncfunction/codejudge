@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const { initDb } = require('./utils/initDb');
+const { rateLimit } = require('./middleware/rateLimit');
 const authRoutes = require('./routes/auth');
 const problemRoutes = require('./routes/problems');
 const submissionRoutes = require('./routes/submissions');
@@ -11,6 +12,21 @@ const PORT = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
+
+// Security headers
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Referrer-Policy', 'same-origin');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  next();
+});
+
+// Rate limiting per route group
+app.use('/api/auth', rateLimit({ windowMs: 60000, max: 30 }));
+app.use('/api/problems', rateLimit({ windowMs: 60000, max: 60 }));
+app.use('/api/submissions', rateLimit({ windowMs: 60000, max: 20 }));
 
 // Request logger
 app.use((req, res, next) => {

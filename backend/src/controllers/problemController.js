@@ -141,4 +141,37 @@ function getProblemStats(req, res) {
   res.json(stats || { total: 0, programming: 0, choice: 0, fill_blank: 0 });
 }
 
-module.exports = { listProblems, getProblem, createProblem, updateProblem, deleteProblem, getProblemStats, getAdminStats, getTagsCloud };
+function exportProblems(req, res) {
+  const problems = queryAll('SELECT * FROM problems ORDER BY id');
+  const data = problems.map(p => ({
+    title: p.title, description: p.description, type: p.type,
+    difficulty: p.difficulty, tags: p.tags, solution: p.solution,
+    test_cases: JSON.parse(p.test_cases || '[]'),
+    options: JSON.parse(p.options || '[]'),
+    blanks_answer: JSON.parse(p.blanks_answer || '[]'),
+  }));
+  res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Content-Disposition', `attachment; filename=codejudge-problems-${new Date().toISOString().slice(0,10)}.json`);
+  res.json({ count: data.length, problems: data });
+}
+
+function importProblems(req, res) {
+  const { problems } = req.body;
+  if (!Array.isArray(problems) || problems.length === 0) {
+    return res.status(400).json({ error: '请提供有效的题目数据' });
+  }
+  let imported = 0;
+  for (const p of problems) {
+    if (!p.title || !p.type) continue;
+    run(
+      'INSERT INTO problems (title, description, type, difficulty, tags, solution, test_cases, options, blanks_answer) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [p.title, p.description || '', p.type, p.difficulty || 'easy', p.tags || '',
+       p.solution || '', JSON.stringify(p.test_cases || []), JSON.stringify(p.options || []),
+       JSON.stringify(p.blanks_answer || [])]
+    );
+    imported++;
+  }
+  res.json({ message: `成功导入 ${imported} 道题目`, count: imported });
+}
+
+module.exports = { listProblems, getProblem, createProblem, updateProblem, deleteProblem, getProblemStats, getAdminStats, getTagsCloud, exportProblems, importProblems };
