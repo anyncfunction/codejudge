@@ -280,6 +280,38 @@ export default function Submissions() {
                               </div>
                             )}
 
+                            {(submission.time_ms != null ||
+                              submission.memory_kb != null) && (
+                              <div className="mb-3 flex flex-wrap items-center gap-4">
+                                {submission.time_ms != null && (
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-xs text-gray-500">耗时</span>
+                                    <div className="w-32 h-2 bg-dark-700 rounded-full overflow-hidden">
+                                      <div
+                                        className="h-full bg-blue-500 rounded-full transition-all"
+                                        style={{ width: `${Math.min((submission.time_ms / 2000) * 100, 100)}%` }}
+                                      />
+                                    </div>
+                                    <span className="text-xs text-gray-300 font-mono">{submission.time_ms}ms</span>
+                                  </div>
+                                )}
+                                {submission.memory_kb != null && (
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-xs text-gray-500">内存</span>
+                                    <div className="w-32 h-2 bg-dark-700 rounded-full overflow-hidden">
+                                      <div
+                                        className="h-full bg-green-500 rounded-full transition-all"
+                                        style={{ width: `${Math.min((submission.memory_kb / 65536) * 100, 100)}%` }}
+                                      />
+                                    </div>
+                                    <span className="text-xs text-gray-300 font-mono">
+                                      {(submission.memory_kb / 1024).toFixed(1)}MB
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+
                             {submission.details?.cases &&
                               submission.details.cases.length > 0 && (
                                 <div>
@@ -309,18 +341,56 @@ export default function Submissions() {
                             {submission.details?.options &&
                               submission.details?.user_answer !== undefined &&
                               submission.details?.user_answer !== null && (
-                                <p className="text-gray-300 text-sm">
-                                  选择的答案：第{' '}
-                                  {Number(submission.details.user_answer) + 1} 项
-                                </p>
+                                <div className="mb-1">
+                                  <p className="text-xs text-gray-500 mb-1">选择答案</p>
+                                  <div className="flex flex-wrap gap-2">
+                                    {submission.details.options.map(
+                                      (opt, idx) => {
+                                        const isUser = idx === Number(submission.details!.user_answer);
+                                        const isCorrect =
+                                          String(idx) === String(submission.details!.correct_answer);
+                                        return (
+                                          <span
+                                            key={idx}
+                                            className={`px-2 py-1 rounded text-xs border ${
+                                              isUser && isCorrect
+                                                ? 'bg-green-600/20 text-green-400 border-green-600/40'
+                                                : isUser
+                                                  ? 'bg-red-600/20 text-red-400 border-red-600/40'
+                                                  : isCorrect
+                                                    ? 'bg-green-600/10 text-green-500 border-green-600/20'
+                                                    : 'bg-dark-700 text-gray-400 border-dark-600'
+                                            }`}
+                                          >
+                                            {String.fromCharCode(65 + idx)}. {opt}
+                                            {isUser && ' ← 你的选择'}
+                                            {isCorrect && ' ✓'}
+                                          </span>
+                                        );
+                                      }
+                                    )}
+                                  </div>
+                                </div>
                               )}
 
                             {submission.details?.acceptable_answers &&
                               submission.details?.user_answer !== undefined &&
                               submission.details?.user_answer !== null && (
-                                <p className="text-gray-300 text-sm">
-                                  填写答案：{submission.details.user_answer}
-                                </p>
+                                <div className="mb-1">
+                                  <p className="text-xs text-gray-500 mb-1">填空答案</p>
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <span className={`px-2 py-1 rounded text-xs ${
+                                      submission.details.acceptable_answers.includes(
+                                        String(submission.details.user_answer)
+                                      )
+                                        ? 'bg-green-600/20 text-green-400'
+                                        : 'bg-red-600/20 text-red-400'
+                                    }`}>
+                                      你的答案：{submission.details.user_answer}
+                                    </span>
+                                    <span className="text-dark-500 text-xs">正确选项：{submission.details.acceptable_answers.join(' / ')}</span>
+                                  </div>
+                                </div>
                               )}
                           </div>
                         )}
