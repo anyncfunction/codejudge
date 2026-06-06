@@ -304,21 +304,31 @@ export default function Problems() {
         </div>
 
         <div className="flex gap-1">
-          {difficultyOptions.map((opt) => (
-            <button
-              key={opt.value}
-              onClick={() =>
-                updateParams({ difficulty: opt.value, page: '' })
-              }
-              className={`px-3 py-1.5 rounded-md text-sm transition-colors ${
-                difficulty === opt.value
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-dark-800 text-gray-300 hover:bg-dark-700'
-              }`}
-            >
-              {opt.label}
-            </button>
-          ))}
+          {difficultyOptions.map((opt) => {
+            const active = difficulty === opt.value;
+            const colorMap: Record<string, string> = {
+              easy: active ? 'bg-green-600 text-white' : 'text-green-500 border-green-500/30 bg-green-500/5 hover:bg-green-500/15',
+              medium: active ? 'bg-yellow-600 text-white' : 'text-yellow-500 border-yellow-500/30 bg-yellow-500/5 hover:bg-yellow-500/15',
+              hard: active ? 'bg-red-600 text-white' : 'text-red-500 border-red-500/30 bg-red-500/5 hover:bg-red-500/15',
+            };
+            return (
+              <button
+                key={opt.value}
+                onClick={() =>
+                  updateParams({ difficulty: opt.value, page: '' })
+                }
+                className={`px-3 py-1.5 rounded-md text-sm transition-colors ${
+                  active && !['easy','medium','hard'].includes(opt.value)
+                    ? 'bg-blue-600 text-white'
+                    : ''
+                } ${
+                  active ? '' : (!opt.value ? 'bg-dark-800 text-gray-300 hover:bg-dark-700' : 'border')
+                } ${opt.value && colorMap[opt.value] ? colorMap[opt.value] : ''}`}
+              >
+                {opt.label}
+              </button>
+            );
+          })}
         </div>
 
         <button

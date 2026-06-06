@@ -14,6 +14,7 @@ import {
   ChevronUp,
   ChevronLeft,
   ChevronRight,
+  RefreshCw,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../services/api';
@@ -346,6 +347,13 @@ export default function ProblemDetail() {
             )}
           </div>
         )}
+
+        <button
+          onClick={() => { setSubmissionResult(null); window.scrollTo(0, 0); }}
+          className="mt-4 text-sm text-primary-400 hover:text-primary-300 transition-colors inline-flex items-center gap-1"
+        >
+          <RefreshCw size={14} /> 再来一次
+        </button>
       </div>
     );
   };
