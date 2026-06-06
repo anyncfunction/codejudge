@@ -8,6 +8,7 @@ import {
   Loader2,
   Share2,
   Star,
+  Sparkles,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../services/api';
@@ -18,6 +19,7 @@ import SubmissionStatus from '../components/SubmissionStatus';
 import MarkdownRenderer from '../components/MarkdownRenderer';
 import type { Problem, Submission, TestCaseResult } from '../types';
 import { useBookmarks } from '../context/BookmarkContext';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 const DIFFICULTY_LABELS: Record<string, string> = {
   easy: '简单',
@@ -187,6 +189,15 @@ export default function ProblemDetail() {
 
     return (
       <div className="card p-6 mt-6">
+        {submissionResult.status === 'accepted' && (
+          <div className="mb-4 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-lg flex items-center gap-3">
+            <Sparkles className="w-6 h-6 text-emerald-400" />
+            <div>
+              <p className="text-emerald-400 font-semibold text-lg">🎉 恭喜通过！</p>
+              <p className="text-emerald-500/70 text-sm">太棒了，继续加油！</p>
+            </div>
+          </div>
+        )}
         <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
           判题结果
           <SubmissionStatus
@@ -328,6 +339,8 @@ export default function ProblemDetail() {
   const tagList = problem?.tags
     ? problem.tags.split(',').filter(Boolean)
     : [];
+
+  useDocumentTitle(problem?.title || '题目');
 
   return (
     <div>

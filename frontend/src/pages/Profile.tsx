@@ -4,6 +4,7 @@ import { User, Mail, Shield, Award, TrendingUp, Loader2, AlertTriangle, CheckCir
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import type { Submission } from '../types';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 const STATUS_MAP: Record<string, { label: string; icon: React.ReactNode; className: string }> = {
   accepted: {
@@ -34,6 +35,7 @@ const STATUS_MAP: Record<string, { label: string; icon: React.ReactNode; classNa
 };
 
 export default function Profile() {
+  useDocumentTitle('个人中心');
   const { user } = useAuth();
   const [profile, setProfile] = useState<any>(null);
   const [submissions, setSubmissions] = useState<Submission[]>([]);

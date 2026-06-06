@@ -45,12 +45,15 @@ export default function ProblemCard({ problem }: { problem: Problem }) {
   return (
     <Link
       to={`/problems/${problem.id}`}
-      className="card flex flex-col gap-4 hover:border-primary-500/50 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary-500/5 transition-all duration-200 group"
+      className={`card flex flex-col gap-4 hover:border-primary-500/50 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary-500/5 transition-all duration-200 group${problem.user_passed ? ' border-l-emerald-500' : ''}`}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2.5 min-w-0">
           {problem.user_passed && (
-            <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0" />
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-500/15 text-emerald-400 text-xs rounded-full border border-emerald-500/30 flex-shrink-0">
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              已通过
+            </span>
           )}
           <h3 className="text-lg font-semibold text-white truncate group-hover:text-primary-400 transition-colors">
             {problem.title}

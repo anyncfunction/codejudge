@@ -20,6 +20,7 @@ import api from '../services/api';
 import ProblemCard from '../components/ProblemCard';
 import type { Problem, PaginatedResponse, ProblemStats } from '../types';
 import { useBookmarks } from '../context/BookmarkContext';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 const typeOptions = [
   { label: '全部', value: '' },
@@ -38,6 +39,7 @@ const difficultyOptions = [
 const PAGE_SIZE_OPTIONS = [10, 20, 50];
 
 export default function Problems() {
+  useDocumentTitle('题库');
   const [searchParams, setSearchParams] = useSearchParams();
 
   const search = searchParams.get('search') || '';

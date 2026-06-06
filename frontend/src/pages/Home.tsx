@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Code2, ListChecks, PenLine, ArrowRight, BookOpen, Sparkles, Zap, Flame, Calendar } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import ProblemCard from '../components/ProblemCard';
 import type { ProblemStats, Problem } from '../types';
 
@@ -40,6 +41,7 @@ const statDefs = [
 ];
 
 export default function Home() {
+  useDocumentTitle('首页');
   const { user } = useAuth();
   const [stats, setStats] = useState<ProblemStats | null>(null);
   const [recentProblems, setRecentProblems] = useState<Problem[]>([]);

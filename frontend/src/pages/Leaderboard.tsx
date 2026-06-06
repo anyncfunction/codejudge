@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Trophy, Medal, User as UserIcon, Zap, BarChart3 } from 'lucide-react';
 import api from '../services/api';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 interface LeaderboardEntry {
   rank: number;
@@ -12,6 +13,7 @@ interface LeaderboardEntry {
 }
 
 export default function Leaderboard() {
+  useDocumentTitle('排行榜');
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
