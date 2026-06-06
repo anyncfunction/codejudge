@@ -85,6 +85,7 @@ export default function ProblemDetail() {
     try {
       const problem = await api.problems.get(Number(id));
       setProblem(problem);
+      window.scrollTo(0, 0);
     } catch (err: any) {
       if (err.message?.includes('404')) {
         setNotFound(true);

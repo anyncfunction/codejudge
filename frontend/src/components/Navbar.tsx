@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Code2, User, LogOut, ShieldCheck, Dices, Menu, X, Activity } from 'lucide-react';
+import { Code2, User, LogOut, ShieldCheck, Dices, Menu, X, Activity, Hash } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export default function Navbar() {
@@ -71,6 +71,24 @@ export default function Navbar() {
               <Dices className="w-4 h-4" />
               随机
             </button>
+            <div className="relative">
+              <Hash className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-dark-500 pointer-events-none" />
+              <input
+                type="number"
+                min="1"
+                placeholder="跳转"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    const val = parseInt((e.target as HTMLInputElement).value);
+                    if (!isNaN(val) && val >= 1) {
+                      navigate(`/problems/${val}`);
+                      (e.target as HTMLInputElement).value = '';
+                    }
+                  }
+                }}
+                className="w-20 pl-7 pr-2 py-1.5 rounded-lg bg-dark-800 border border-dark-700 text-xs text-dark-200 placeholder-dark-500 focus:outline-none focus:border-primary-600/50 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              />
+            </div>
           </div>
         </div>
 
