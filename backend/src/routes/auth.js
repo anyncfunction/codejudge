@@ -8,6 +8,14 @@ router.post('/login', login);
 router.get('/profile', authenticate, getProfile);
 router.put('/password', authenticate, changePassword);
 
+router.get('/solved-calendar', authenticate, (req, res) => {
+  const rows = queryAll(
+    'SELECT DISTINCT DATE(created_at) as date FROM submissions WHERE user_id = ? ORDER BY date',
+    [req.user.id]
+  );
+  res.json({ dates: rows.map(r => r.date) });
+});
+
 router.get('/leaderboard', async (req, res) => {
   try {
     const rows = queryAll(`

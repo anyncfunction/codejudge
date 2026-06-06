@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { User, Mail, Shield, Award, TrendingUp, Loader2, AlertTriangle, CheckCircle2, XCircle, Clock, Zap, Lock, Key } from 'lucide-react';
+import { User, Mail, Shield, Award, TrendingUp, Loader2, AlertTriangle, CheckCircle2, XCircle, Clock, Zap, Lock, Key, CalendarDays } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import type { Submission } from '../types';
@@ -46,6 +46,18 @@ export default function Profile() {
   const [passwordLoading, setPasswordLoading] = useState(false);
   const [passwordMessage, setPasswordMessage] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [calendarDates, setCalendarDates] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    const token = localStorage.getItem('oj_token');
+    if (!token) return;
+    fetch('/api/auth/solved-calendar', { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.json())
+      .then(data => {
+        setCalendarDates(new Set(data.dates || []));
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     async function load() {
@@ -115,6 +127,11 @@ export default function Profile() {
   const stats = profile.stats || { total: 0, accepted: 0 };
   const acceptanceRate = stats.total > 0 ? Math.round((stats.accepted / stats.total) * 100) : 0;
   const uniqueProblems = new Set(submissions.map((s) => s.problem_id)).size;
+  const days = Array.from({ length: 30 }, (_, i) => {
+    const d = new Date();
+    d.setDate(d.getDate() - (29 - i));
+    return d.toISOString().slice(0, 10);
+  });
 
   const formatDate = (dateStr: string) => {
     if (!dateStr) return '-';
@@ -183,6 +200,38 @@ export default function Profile() {
             已解题目
           </p>
           <p className="text-2xl font-bold text-purple-400">{uniqueProblems}</p>
+        </div>
+      </div>
+
+      {/* Solved calendar */}
+      <div className="card p-6">
+        <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+          <CalendarDays className="w-5 h-5 text-blue-400" />
+          解题日历
+        </h2>
+        <div className="flex flex-wrap gap-1.5">
+          {days.map((day) => {
+            const hasSubmission = calendarDates.has(day);
+            return (
+              <div
+                key={day}
+                title={`${day} ${hasSubmission ? '已打卡' : '未打卡'}`}
+                className={`w-3.5 h-3.5 rounded-sm transition-colors ${
+                  hasSubmission ? 'bg-emerald-500' : 'bg-dark-700'
+                }`}
+              />
+            );
+          })}
+        </div>
+        <div className="flex items-center gap-4 mt-3 text-xs text-dark-400">
+          <span className="flex items-center gap-1.5">
+            <span className="w-3 h-3 rounded-sm bg-emerald-500" />
+            已打卡
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="w-3 h-3 rounded-sm bg-dark-700" />
+            未打卡
+          </span>
         </div>
       </div>
 
