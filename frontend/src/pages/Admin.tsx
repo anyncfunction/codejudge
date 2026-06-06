@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Edit, Trash2, Users, Code, BarChart3, AlertTriangle, Loader2, Activity, Percent, Clock, Download, Upload } from 'lucide-react';
+import { Plus, Edit, Trash2, Users, Shield, Code, BarChart3, AlertTriangle, Loader2, Activity, Percent, Clock, Download, Upload } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
@@ -16,6 +16,8 @@ export default function Admin() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [users, setUsers] = useState<any[]>([]);
+  const [usersLoading, setUsersLoading] = useState(false);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -33,6 +35,10 @@ export default function Admin() {
           const adminRes = await api.problems.getAdminStats();
           setAdminStats(adminRes);
         } catch { /* silently ignore */ }
+        try {
+          const userRes = await fetch('/api/auth/admin/users', { headers: { Authorization: `Bearer ${localStorage.getItem('oj_token')}` } });
+          if (userRes.ok) setUsers((await userRes.json()).users);
+        } catch {}
       }
     } catch (err: any) {
       const msg = err.message || '加载数据失败';
@@ -91,6 +97,23 @@ export default function Admin() {
     } finally {
       setDeletingId(null);
     }
+  };
+
+  const handleDeleteUser = async (userId: number, username: string) => {
+    if (!window.confirm(`确定要删除用户「${username}」吗？此操作不可撤销。`)) return;
+    try {
+      const res = await fetch(`/api/auth/admin/users/${userId}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${localStorage.getItem('oj_token')}` },
+      });
+      if (res.ok) {
+        toast.success('用户已删除');
+        setUsers(prev => prev.filter(u => u.id !== userId));
+      } else {
+        const data = await res.json();
+        toast.error(data.error || '删除失败');
+      }
+    } catch { toast.error('删除失败'); }
   };
 
   const TYPE_LABELS: Record<string, string> = {
@@ -212,6 +235,47 @@ export default function Admin() {
           </div>
         </div>
       )}
+
+      {/* User Management */}
+      <div className="card p-6 mb-6">
+        <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+          <Users className="w-5 h-5 text-blue-400" /> 用户管理
+        </h2>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-dark-700">
+                <th className="text-left py-2 px-3 text-dark-400">ID</th>
+                <th className="text-left py-2 px-3 text-dark-400">用户名</th>
+                <th className="text-left py-2 px-3 text-dark-400 hidden md:table-cell">邮箱</th>
+                <th className="text-center py-2 px-3 text-dark-400">角色</th>
+                <th className="text-center py-2 px-3 text-dark-400 hidden md:table-cell">注册时间</th>
+                <th className="text-center py-2 px-3 text-dark-400">操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              {users.map(u => (
+                <tr key={u.id} className="border-b border-dark-800">
+                  <td className="py-2 px-3 text-dark-400">{u.id}</td>
+                  <td className="py-2 px-3 text-white">{u.username}</td>
+                  <td className="py-2 px-3 text-dark-300 hidden md:table-cell">{u.email}</td>
+                  <td className="py-2 px-3 text-center">
+                    {u.role === 'admin' ? <Shield className="w-4 h-4 text-primary-400 mx-auto" /> : <span className="text-dark-400 text-xs">user</span>}
+                  </td>
+                  <td className="py-2 px-3 text-dark-400 text-center hidden md:table-cell">{u.created_at?.slice(0, 10)}</td>
+                  <td className="py-2 px-3 text-center">
+                    {u.role !== 'admin' && (
+                      <button onClick={() => handleDeleteUser(u.id, u.username)} className="btn-danger text-xs px-2 py-1">
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
       {/* Actions */}
       <div className="flex items-center justify-between mb-4">

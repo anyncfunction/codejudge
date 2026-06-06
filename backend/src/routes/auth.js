@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const { register, login, getProfile, changePassword } = require('../controllers/authController');
 const { authenticate } = require('../middleware/auth');
-const { queryAll } = require('../config/db');
+const { queryAll, run } = require('../config/db');
 
 router.post('/register', register);
 router.post('/login', login);
@@ -61,6 +61,18 @@ router.get('/leaderboard', async (req, res) => {
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
+});
+
+router.get('/admin/users', authenticate, (req, res) => {
+  if (req.user.role !== 'admin') return res.status(403).json({ error: '需要管理员权限' });
+  const users = queryAll('SELECT id, username, email, role, created_at FROM users ORDER BY id');
+  res.json({ users });
+});
+
+router.delete('/admin/users/:id', authenticate, (req, res) => {
+  if (req.user.role !== 'admin') return res.status(403).json({ error: '需要管理员权限' });
+  run('DELETE FROM users WHERE id = ? AND role != ?', [req.params.id, 'admin']);
+  res.json({ message: '用户已删除' });
 });
 
 module.exports = router;
