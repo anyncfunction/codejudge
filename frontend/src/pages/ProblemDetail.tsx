@@ -6,6 +6,7 @@ import {
   CheckCircle,
   AlertTriangle,
   Loader2,
+  Share2,
   Star,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -380,6 +381,16 @@ export default function ProblemDetail() {
                       : 'text-dark-500 hover:text-yellow-400'
                   }`}
                 />
+              </button>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(window.location.href);
+                  toast.success('链接已复制');
+                }}
+                className="p-1 rounded-md hover:bg-dark-700 transition-colors"
+                title="分享"
+              >
+                <Share2 className="w-5 h-5 text-dark-500 hover:text-white transition-colors" />
               </button>
               <h1 className="text-2xl font-bold text-white">
                 {problem.title}

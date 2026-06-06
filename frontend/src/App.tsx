@@ -11,6 +11,7 @@ import AdminProblemForm from './pages/AdminProblemForm';
 import Leaderboard from './pages/Leaderboard';
 import NotFound from './pages/NotFound';
 import Profile from './pages/Profile';
+import Footer from './components/Footer';
 
 export default function App() {
   return (
@@ -31,6 +32,7 @@ export default function App() {
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <Footer />
       </main>
     </div>
   );
