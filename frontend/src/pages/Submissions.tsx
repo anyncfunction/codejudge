@@ -8,6 +8,10 @@ import {
   Inbox,
   ChevronDown,
   ChevronUp,
+  Send,
+  CheckCircle,
+  Code,
+  Award,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../services/api';
@@ -93,6 +97,30 @@ export default function Submissions() {
 
   const submissions = data?.submissions ?? [];
 
+  const totalSubmissions = data?.total ?? 0;
+  const acceptedCount = submissions.filter(s => s.status === 'accepted').length;
+  const acceptanceRate = submissions.length > 0
+    ? ((acceptedCount / submissions.length) * 100).toFixed(1)
+    : '0';
+
+  const langCounts: Record<string, number> = {};
+  submissions.forEach(s => {
+    if (s.language) {
+      langCounts[s.language] = (langCounts[s.language] || 0) + 1;
+    }
+  });
+  let mostUsedLang = '-';
+  let maxLangCount = 0;
+  Object.entries(langCounts).forEach(([lang, count]) => {
+    if (count > maxLangCount) {
+      maxLangCount = count;
+      mostUsedLang = lang;
+    }
+  });
+
+  const totalScore = submissions.reduce((sum, s) => sum + (s.score || 0), 0);
+  const avgScore = submissions.length > 0 ? (totalScore / submissions.length).toFixed(1) : '0';
+
   return (
     <div>
       <h1 className="text-2xl font-bold text-white mb-6">提交记录</h1>
@@ -113,6 +141,40 @@ export default function Submissions() {
           </button>
         ))}
       </div>
+
+      {/* Stats bar */}
+      {data && (
+        <div className="grid grid-cols-4 gap-4 mb-6">
+          <div className="card p-4 flex items-center gap-3">
+            <Send size={20} className="text-blue-400" />
+            <div>
+              <p className="text-xs text-gray-400">总提交</p>
+              <p className="text-lg font-bold text-white">{totalSubmissions}</p>
+            </div>
+          </div>
+          <div className="card p-4 flex items-center gap-3">
+            <CheckCircle size={20} className="text-green-400" />
+            <div>
+              <p className="text-xs text-gray-400">通过率</p>
+              <p className="text-lg font-bold text-white">{acceptanceRate}%</p>
+            </div>
+          </div>
+          <div className="card p-4 flex items-center gap-3">
+            <Code size={20} className="text-purple-400" />
+            <div>
+              <p className="text-xs text-gray-400">常用语言</p>
+              <p className="text-lg font-bold text-white">{mostUsedLang}</p>
+            </div>
+          </div>
+          <div className="card p-4 flex items-center gap-3">
+            <Award size={20} className="text-yellow-400" />
+            <div>
+              <p className="text-xs text-gray-400">平均分</p>
+              <p className="text-lg font-bold text-white">{avgScore}</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Content */}
       {loading ? (

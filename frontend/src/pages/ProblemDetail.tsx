@@ -59,6 +59,8 @@ export default function ProblemDetail() {
   const [submitting, setSubmitting] = useState(false);
   const [submissionResult, setSubmissionResult] = useState<Submission | null>(null);
 
+  const CODE_SAVE_KEY = `cj_code_${id}_${language}`;
+
   const fetchProblem = useCallback(async () => {
     if (!id) return;
     setLoading(true);
@@ -79,13 +81,19 @@ export default function ProblemDetail() {
   }, [id]);
 
   const loadTemplate = useCallback(async (lang: string) => {
+    const savedKey = `cj_code_${id}_${lang}`;
+    const saved = localStorage.getItem(savedKey);
+    if (saved) {
+      setCode(saved);
+      return;
+    }
     try {
       const { template } = await api.problems.getTemplate(lang);
       setCode(template);
     } catch {
       setCode('');
     }
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     fetchProblem();
@@ -99,6 +107,14 @@ export default function ProblemDetail() {
       loadTemplate(language);
     }
   }, [problem?.type, language, loadTemplate]);
+
+  useEffect(() => {
+    if (!code || problem?.type !== 'programming') return;
+    const timer = setTimeout(() => {
+      localStorage.setItem(CODE_SAVE_KEY, code);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [code, CODE_SAVE_KEY, problem?.type]);
 
   const handleSubmit = async () => {
     if (!problem) return;
