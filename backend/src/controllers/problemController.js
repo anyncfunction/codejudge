@@ -1,7 +1,7 @@
 const { queryAll, queryOne, run } = require('../config/db');
 
 function listProblems(req, res) {
-  const { type, difficulty, search, page = 1, limit = 20 } = req.query;
+  const { type, difficulty, search, page = 1, limit = 20, sort } = req.query;
   let sql = 'SELECT id, title, type, difficulty, tags, accepted_count, submission_count FROM problems WHERE 1=1';
   let countSql = 'SELECT COUNT(*) as count FROM problems WHERE 1=1';
   let conditions = '';
@@ -13,7 +13,16 @@ function listProblems(req, res) {
 
   const total = queryOne(countSql + conditions, params).count;
 
-  sql += conditions + ' ORDER BY id DESC LIMIT ? OFFSET ?';
+  let orderClause;
+  if (sort === 'acceptance') {
+    orderClause = 'ORDER BY (accepted_count * 100.0 / CASE WHEN submission_count > 0 THEN submission_count ELSE 1 END) DESC';
+  } else if (sort === 'submissions') {
+    orderClause = 'ORDER BY submission_count DESC';
+  } else {
+    orderClause = 'ORDER BY id DESC';
+  }
+
+  sql += conditions + ' ' + orderClause + ' LIMIT ? OFFSET ?';
   params.push(Number(limit), (Number(page) - 1) * Number(limit));
 
   const problems = queryAll(sql, params);

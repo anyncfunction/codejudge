@@ -78,6 +78,8 @@ async function seed() {
     { title:'奇数之和', dd:'medium', tags:'数组,条件', gen(){ const n=rand(3,15);const a=Array.from({length:n},()=>rand(1,50));return {tc:[`${n}\n${a.join(' ')}`,String(a.filter(x=>x%2===1).reduce((s,x)=>s+x,0))]}; } },
     { title:'第二大数', dd:'medium', tags:'数组,排序', gen(){ const n=rand(3,12);const a=Array.from({length:n},()=>rand(1,100));const s=[...new Set(a)].sort((x,y)=>y-x);return {tc:[`${n}\n${a.join(' ')}`,String(s[1]||s[0])]}; } },
     { title:'数组众数', dd:'hard', tags:'数组,统计', gen(){ const n=rand(4,12);const pool=[rand(1,5),rand(1,5)];const a=[];for(let i=0;i<n-2;i++)a.push(pick(pool));a.push(pool[0]);a.push(pool[0]); const m={};a.forEach(x=>m[x]=(m[x]||0)+1);const mode=Object.keys(m).sort((x,y)=>m[y]-m[x])[0];return {tc:[`${n}\n${a.join(' ')}`,String(mode)]}; } },
+    { title:'数组元素求和（指定范围）', dd:'medium', tags:'数组,前缀和', gen(){ const n=rand(5,20);const a=Array.from({length:n},()=>rand(-50,50));const l=rand(1,n-1);const r=rand(l,n);const sum=a.slice(l-1,r).reduce((x,y)=>x+y,0); return {tc:[`${n}\n${a.join(' ')}\n${l} ${r}`,String(sum)]}; } },
+    { title:'判断闰年', dd:'easy', tags:'条件判断,数学', gen(){ const years=[2000,2004,2008,2012,2016,2020,2024,2100,2200,2300,1900,1800,2001,2002,2003,2005,2006,2007,2009,2010]; const y=pick(years); const leap=(y%400===0)||(y%4===0&&y%100!==0); return {tc:[String(y),leap?'YES':'NO']}; } },
   ];
 
   const descriptions = {
@@ -119,6 +121,8 @@ async function seed() {
     '奇数之和': '计算数组中所有奇数元素的和',
     '第二大数': '找出数组中第二大的数。如果所有元素相同，输出该元素',
     '数组众数': '找出数组中出现次数最多的元素（众数）。保证只有一个众数',
+    '数组元素求和（指定范围）': '给定一个数组和两个整数 L 和 R，计算数组中从第 L 个到第 R 个元素（含两端）的和',
+    '判断闰年': '判断一个年份是否为闰年。闰年规则：能被4整除但不能被100整除，或能被400整除。是输出 YES，否则输出 NO',
   };
 
   for (let i = 0; i < progTarget; i++) {
@@ -311,4 +315,3 @@ async function seed() {
   await seed();
   process.exit(0);
 })();
-

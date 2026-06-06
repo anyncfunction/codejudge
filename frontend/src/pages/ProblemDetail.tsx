@@ -9,6 +9,9 @@ import {
   Share2,
   Star,
   Sparkles,
+  Lightbulb,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../services/api';
@@ -61,6 +64,9 @@ export default function ProblemDetail() {
   // Submission
   const [submitting, setSubmitting] = useState(false);
   const [submissionResult, setSubmissionResult] = useState<Submission | null>(null);
+
+  // Hint panel
+  const [hintExpanded, setHintExpanded] = useState(true);
 
   const CODE_SAVE_KEY = `cj_code_${id}_${language}`;
 
@@ -474,6 +480,38 @@ export default function ProblemDetail() {
                     </button>
                   ))}
                 </div>
+
+                {/* Hint panel */}
+                <div className="mb-3 border border-dark-700 rounded-lg overflow-hidden">
+                  <button
+                    onClick={() => setHintExpanded(!hintExpanded)}
+                    className="w-full flex items-center gap-2 px-3 py-2 bg-dark-800/70 text-left hover:bg-dark-800 transition-colors"
+                  >
+                    <Lightbulb size={16} className="text-yellow-400" />
+                    <span className="text-sm text-gray-300">输入/输出格式提示</span>
+                    <span className="ml-auto text-gray-500">
+                      {hintExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                    </span>
+                  </button>
+                  {hintExpanded && (
+                    <div className="px-3 py-2 space-y-1 text-xs text-dark-400">
+                      <p>输入通过标准输入(stdin)读取</p>
+                      <p>使用 console.log() (JS) 或 print() (Python) 输出</p>
+                      <p>示例代码模板已自动填入</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Sample test case */}
+                {problem.test_cases && problem.test_cases.length > 0 && (
+                  <div className="mb-3 p-3 bg-dark-800/50 rounded-lg border border-dark-700">
+                    <p className="text-dark-400 text-xs mb-2">示例输入:</p>
+                    <pre className="text-dark-300 text-sm">{problem.test_cases[0].input}</pre>
+                    <p className="text-dark-400 text-xs mb-1 mt-2">示例输出:</p>
+                    <pre className="text-emerald-400 text-sm">{problem.test_cases[0].expected_output}</pre>
+                  </div>
+                )}
+
                 <CodeEditor
                   code={code}
                   language={language === 'javascript' ? 'javascript' : 'python'}

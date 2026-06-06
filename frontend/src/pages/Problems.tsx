@@ -14,6 +14,7 @@ import {
   ArrowRightLeft,
   Tag,
   Star,
+  ArrowUpDown,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../services/api';
@@ -36,6 +37,12 @@ const difficultyOptions = [
   { label: '困难', value: 'hard' },
 ];
 
+const sortOptions = [
+  { label: '默认排序', value: '' },
+  { label: '通过率最高', value: 'acceptance' },
+  { label: '提交最多', value: 'submissions' },
+];
+
 const PAGE_SIZE_OPTIONS = [10, 20, 50];
 
 export default function Problems() {
@@ -45,6 +52,7 @@ export default function Problems() {
   const search = searchParams.get('search') || '';
   const type = searchParams.get('type') || '';
   const difficulty = searchParams.get('difficulty') || '';
+  const sort = searchParams.get('sort') || '';
   const page = parseInt(searchParams.get('page') || '1', 10);
 
   const [data, setData] = useState<PaginatedResponse<Problem> | null>(null);
@@ -93,6 +101,7 @@ export default function Problems() {
       if (type) params.type = type;
       if (difficulty) params.difficulty = difficulty;
       if (search) params.search = search;
+      if (sort) params.sort = sort;
 
       const res = await api.problems.list(params);
       setData(res);
@@ -103,7 +112,7 @@ export default function Problems() {
     } finally {
       setLoading(false);
     }
-  }, [page, pageSize, type, difficulty, search]);
+  }, [page, pageSize, type, difficulty, search, sort]);
 
   useEffect(() => {
     fetchProblems();
@@ -294,6 +303,23 @@ export default function Problems() {
           <Star size={14} className={bookmarkFilter ? 'fill-white' : ''} />
           仅显示收藏
         </button>
+
+        <div className="flex items-center gap-1.5">
+          <ArrowUpDown size={14} className="text-gray-500" />
+          {sortOptions.map((opt) => (
+            <button
+              key={opt.value}
+              onClick={() => updateParams({ sort: opt.value, page: '' })}
+              className={`px-3 py-1.5 rounded-md text-sm transition-colors ${
+                sort === opt.value || (!sort && opt.value === '')
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-dark-800 text-gray-300 hover:bg-dark-700'
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
 
         <div className="flex items-center gap-1.5 ml-auto">
           <ArrowRightLeft size={14} className="text-gray-500" />
