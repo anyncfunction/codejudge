@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Code2, User, LogOut, ShieldCheck, Dices, Menu, X } from 'lucide-react';
+import { Code2, User, LogOut, ShieldCheck, Dices, Menu, X, Activity } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export default function Navbar() {
@@ -123,6 +123,9 @@ export default function Navbar() {
                 >
                   <ShieldCheck className="w-3.5 h-3.5" />
                   管理
+                </Link>
+                <Link to="/system" className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-600/15 text-blue-400 border border-blue-600/30 hover:bg-blue-600/25 transition-colors">
+                  <Activity className="w-3.5 h-3.5" /> 系统
                 </Link>
               )}
               <button
