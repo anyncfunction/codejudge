@@ -20,6 +20,7 @@ import toast from 'react-hot-toast';
 import api from '../services/api';
 import ProblemCard from '../components/ProblemCard';
 import type { Problem, PaginatedResponse, ProblemStats } from '../types';
+import { useAuth } from '../context/AuthContext';
 import { useBookmarks } from '../context/BookmarkContext';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
@@ -66,6 +67,9 @@ export default function Problems() {
   const [jumpPage, setJumpPage] = useState('');
   const [bookmarkFilter, setBookmarkFilter] = useState(false);
   const { isBookmarked } = useBookmarks();
+  const { user } = useAuth();
+  const [userStats, setUserStats] = useState<{ accepted: number } | null>(null);
+  const totalProblems = stats?.total ?? 0;
 
   const fetchStats = useCallback(async () => {
     try {
@@ -89,6 +93,15 @@ export default function Problems() {
     fetchStats();
     fetchTags();
   }, [fetchStats, fetchTags]);
+
+  useEffect(() => {
+    if (!user) return;
+    api.auth.profile().then((res: any) => {
+      if (res?.accepted_count != null) {
+        setUserStats({ accepted: res.accepted_count });
+      }
+    }).catch(() => {});
+  }, [user]);
 
   const fetchProblems = useCallback(async () => {
     setLoading(true);
@@ -253,6 +266,22 @@ export default function Problems() {
               <span className="ml-1 text-[10px] opacity-60">{tag.count}</span>
             </button>
           ))}
+        </div>
+      )}
+
+      {/* Completion Progress */}
+      {user && userStats && (
+        <div className="card p-4 mb-4">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-sm font-medium text-dark-200">答题进度</h3>
+            <span className="text-xs text-dark-400">{userStats.accepted} / {totalProblems} 通过</span>
+          </div>
+          <div className="h-2 bg-dark-700 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-primary-500 to-emerald-500 rounded-full transition-all duration-500"
+              style={{ width: `${totalProblems > 0 ? Math.min(100, (userStats.accepted / totalProblems) * 100) : 0}%` }}
+            />
+          </div>
         </div>
       )}
 

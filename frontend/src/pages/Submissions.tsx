@@ -12,6 +12,7 @@ import {
   CheckCircle,
   Code,
   Award,
+  Clipboard,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../services/api';
@@ -260,12 +261,16 @@ export default function Submissions() {
                           <div className="px-4 pb-4 mt-2 border-t border-dark-700 pt-3">
                             {submission.code && (
                               <div className="mb-3">
-                                <p className="text-xs text-gray-500 mb-1">
-                                  提交代码
-                                </p>
-                                <pre className="bg-dark-900 rounded p-3 text-sm text-gray-300 overflow-auto max-h-60">
-                                  {submission.code}
-                                </pre>
+                                <div className="flex items-center justify-between mb-1">
+                                  <p className="text-xs text-dark-500">提交代码</p>
+                                  <button
+                                    onClick={() => { navigator.clipboard.writeText(submission.code); toast.success('代码已复制'); }}
+                                    className="flex items-center gap-1 text-xs text-dark-400 hover:text-white transition-colors"
+                                  >
+                                    <Clipboard className="w-3.5 h-3.5" /> 复制
+                                  </button>
+                                </div>
+                                <pre className="bg-dark-900 rounded p-3 text-sm text-dark-300 overflow-auto max-h-60">{submission.code}</pre>
                               </div>
                             )}
 
