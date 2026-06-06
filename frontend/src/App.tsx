@@ -17,6 +17,7 @@ const Leaderboard = lazy(() => import('./pages/Leaderboard'));
 const Profile = lazy(() => import('./pages/Profile'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 const SystemHealth = lazy(() => import('./pages/SystemHealth'));
+const ApiDocs = lazy(() => import('./pages/ApiDocs'));
 
 export default function App() {
   return (
@@ -42,6 +43,7 @@ export default function App() {
             <Route path="/admin/problems/:id/edit" element={<AdminProblemForm />} />
             <Route path="/leaderboard" element={<Leaderboard />} />
             <Route path="/system" element={<SystemHealth />} />
+            <Route path="/api-docs" element={<ApiDocs />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>

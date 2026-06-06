@@ -37,6 +37,7 @@ export default function Navbar() {
     { to: '/problems', label: '题库' },
     { to: '/leaderboard', label: '排行榜' },
     { to: '/submissions', label: '提交记录' },
+    { to: '/api-docs', label: 'API' },
   ];
 
   return (
