@@ -48,8 +48,14 @@ function getProfile(req, res) {
 
   const totalRow = queryOne('SELECT COUNT(*) as count FROM submissions WHERE user_id = ?', [req.user.id]);
   const acceptedRow = queryOne("SELECT COUNT(*) as count FROM submissions WHERE user_id = ? AND status = 'accepted'", [req.user.id]);
+  const rankRow = queryOne(`
+    SELECT COUNT(*) + 1 as rank FROM (
+      SELECT user_id, COUNT(*) as accepted_count FROM submissions
+      WHERE status = 'accepted' GROUP BY user_id
+    ) t WHERE t.accepted_count > (SELECT COUNT(*) FROM submissions WHERE user_id = ? AND status = 'accepted')
+  `, [req.user.id]);
 
-  res.json({ ...user, stats: { total: totalRow.count, accepted: acceptedRow.count } });
+  res.json({ ...user, stats: { total: totalRow.count, accepted: acceptedRow.count, rank: rankRow?.rank || 0 } });
 }
 
 function changePassword(req, res) {

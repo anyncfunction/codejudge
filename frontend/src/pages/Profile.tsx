@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { User, Mail, Shield, Award, TrendingUp, Loader2, AlertTriangle, CheckCircle2, XCircle, Clock, Zap, Lock, Key, CalendarDays, Code, PieChart, Trash2 } from 'lucide-react';
+import { User, Mail, Shield, Award, TrendingUp, Loader2, AlertTriangle, CheckCircle2, XCircle, Clock, Zap, Lock, Key, CalendarDays, Code, PieChart, Trash2, Trophy } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import toast from 'react-hot-toast';
@@ -198,7 +198,7 @@ export default function Profile() {
       </div>
 
       {/* Stats cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
         <div className="card p-4 text-center">
           <p className="text-dark-400 text-xs uppercase tracking-wide mb-1">
             总提交
@@ -223,6 +223,13 @@ export default function Profile() {
             已解题目
           </p>
           <p className="text-2xl font-bold text-purple-400">{uniqueProblems}</p>
+        </div>
+        <div className="card p-4 text-center">
+          <p className="text-dark-400 text-xs uppercase tracking-wide mb-1 flex items-center justify-center gap-1">
+            <Trophy className="w-3 h-3" />
+            排名
+          </p>
+          <p className="text-2xl font-bold text-yellow-400">#{stats.rank ?? '-'}</p>
         </div>
       </div>
 

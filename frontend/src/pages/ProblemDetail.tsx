@@ -475,9 +475,9 @@ export default function ProblemDetail() {
                     key={tag}
                     className="px-2 py-0.5 bg-dark-800 text-gray-400 text-xs rounded"
                   >
-                    {tag}
-                  </span>
-                ))}
+              {tag}
+            </span>
+          ))}
               </div>
             )}
           </div>

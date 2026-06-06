@@ -125,7 +125,16 @@ export default function Submissions() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-white mb-6">提交记录</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold text-white">提交记录</h1>
+        <button
+          onClick={fetchSubmissions}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-dark-400 hover:text-white hover:bg-dark-800 transition-colors"
+        >
+          <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
+          刷新
+        </button>
+      </div>
 
       {/* Status filter */}
       <div className="flex flex-wrap gap-1 mb-6">
