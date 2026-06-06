@@ -8,6 +8,7 @@ export default function Navbar() {
 
   const navLinks = [
     { to: '/problems', label: '题库' },
+    { to: '/leaderboard', label: '排行榜' },
     { to: '/submissions', label: '提交记录' },
   ];
 

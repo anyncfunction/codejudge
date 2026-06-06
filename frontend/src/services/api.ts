@@ -29,6 +29,7 @@ const api = {
     login: (body: { email: string; password: string }) =>
       request<{ token: string; user: import('../types').User }>('/auth/login', { method: 'POST', body: JSON.stringify(body) }),
     profile: () => request<import('../types').User>('/auth/profile'),
+    leaderboard: () => request<any[]>('/auth/leaderboard'),
   },
 
   problems: {

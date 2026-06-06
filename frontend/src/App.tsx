@@ -8,6 +8,7 @@ import ProblemDetail from './pages/ProblemDetail';
 import Submissions from './pages/Submissions';
 import Admin from './pages/Admin';
 import AdminProblemForm from './pages/AdminProblemForm';
+import Leaderboard from './pages/Leaderboard';
 
 export default function App() {
   return (
@@ -24,6 +25,7 @@ export default function App() {
           <Route path="/admin" element={<Admin />} />
           <Route path="/admin/problems/new" element={<AdminProblemForm />} />
           <Route path="/admin/problems/:id/edit" element={<AdminProblemForm />} />
+          <Route path="/leaderboard" element={<Leaderboard />} />
         </Routes>
       </main>
     </div>

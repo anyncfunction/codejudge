@@ -7,11 +7,16 @@ import {
   AlertCircle,
   RefreshCw,
   Inbox,
+  BookOpen,
+  Code,
+  ListChecks,
+  PenLine,
+  ArrowRightLeft,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../services/api';
 import ProblemCard from '../components/ProblemCard';
-import type { Problem, PaginatedResponse } from '../types';
+import type { Problem, PaginatedResponse, ProblemStats } from '../types';
 
 const typeOptions = [
   { label: '全部', value: '' },
@@ -27,7 +32,7 @@ const difficultyOptions = [
   { label: '困难', value: 'hard' },
 ];
 
-const PAGE_SIZE = 12;
+const PAGE_SIZE_OPTIONS = [10, 20, 50];
 
 export default function Problems() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -40,8 +45,24 @@ export default function Problems() {
   const [data, setData] = useState<PaginatedResponse<Problem> | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [stats, setStats] = useState<ProblemStats | null>(null);
 
   const [searchInput, setSearchInput] = useState(search);
+  const [pageSize, setPageSize] = useState(12);
+  const [jumpPage, setJumpPage] = useState('');
+
+  const fetchStats = useCallback(async () => {
+    try {
+      const res = await api.problems.stats();
+      setStats(res);
+    } catch {
+      // silently ignore stats errors
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchStats();
+  }, [fetchStats]);
 
   const fetchProblems = useCallback(async () => {
     setLoading(true);
@@ -49,7 +70,7 @@ export default function Problems() {
     try {
       const params: Record<string, any> = {
         page,
-        limit: PAGE_SIZE,
+        limit: pageSize,
       };
       if (type) params.type = type;
       if (difficulty) params.difficulty = difficulty;
@@ -64,7 +85,7 @@ export default function Problems() {
     } finally {
       setLoading(false);
     }
-  }, [page, type, difficulty, search]);
+  }, [page, pageSize, type, difficulty, search]);
 
   useEffect(() => {
     fetchProblems();
@@ -73,6 +94,17 @@ export default function Problems() {
   useEffect(() => {
     setSearchInput(search);
   }, [search]);
+
+  // Debounced search: triggers 300ms after typing stops
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchInput !== search) {
+        updateParams({ search: searchInput, page: '' });
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchInput]);
 
   const updateParams = (updates: Record<string, string>) => {
     const next = new URLSearchParams(searchParams);
@@ -97,7 +129,22 @@ export default function Problems() {
     if (e.key === 'Enter') handleSearch();
   };
 
-  const totalPages = data ? Math.ceil(data.total / PAGE_SIZE) : 0;
+  const handlePageSizeChange = (size: number) => {
+    setPageSize(size);
+    updateParams({ page: '' });
+  };
+
+  const handleJumpPage = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      const num = parseInt(jumpPage, 10);
+      if (num >= 1 && num <= totalPages) {
+        updateParams({ page: String(num) });
+        setJumpPage('');
+      }
+    }
+  };
+
+  const totalPages = data ? Math.ceil(data.total / pageSize) : 0;
 
   const getPageNumbers = (): (number | '...')[] => {
     if (totalPages <= 7) {
@@ -113,9 +160,32 @@ export default function Problems() {
     return pages;
   };
 
+  const statCards = [
+    { label: '全部', value: stats?.total ?? 0, icon: BookOpen, color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/20' },
+    { label: '编程题', value: stats?.programming ?? 0, icon: Code, color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
+    { label: '选择题', value: stats?.choice ?? 0, icon: ListChecks, color: 'text-purple-400', bg: 'bg-purple-500/10', border: 'border-purple-500/20' },
+    { label: '填空题', value: stats?.fill_blank ?? 0, icon: PenLine, color: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/20' },
+  ];
+
   return (
     <div>
       <h1 className="text-2xl font-bold text-white mb-6">题库</h1>
+
+      {/* Stats Bar */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+        {statCards.map((card) => (
+          <div
+            key={card.label}
+            className={`flex items-center gap-3 p-3 rounded-lg border ${card.border} ${card.bg}`}
+          >
+            <card.icon size={20} className={card.color} />
+            <div>
+              <div className={`text-xl font-bold ${card.color}`}>{card.value}</div>
+              <div className="text-xs text-gray-400">{card.label}</div>
+            </div>
+          </div>
+        ))}
+      </div>
 
       {/* Search */}
       <div className="flex gap-2 mb-4">
@@ -138,7 +208,7 @@ export default function Problems() {
         </button>
       </div>
 
-      {/* Filters */}
+      {/* Filters & Page Size */}
       <div className="flex flex-wrap items-center gap-4 mb-6">
         <div className="flex gap-1">
           {typeOptions.map((opt) => (
@@ -173,6 +243,23 @@ export default function Problems() {
             </button>
           ))}
         </div>
+
+        <div className="flex items-center gap-1.5 ml-auto">
+          <ArrowRightLeft size={14} className="text-gray-500" />
+          {PAGE_SIZE_OPTIONS.map((size) => (
+            <button
+              key={size}
+              onClick={() => handlePageSizeChange(size)}
+              className={`px-2.5 py-1 rounded-md text-xs transition-colors ${
+                pageSize === size
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-dark-800 text-gray-400 hover:text-white hover:bg-dark-700'
+              }`}
+            >
+              {size}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Content */}
@@ -202,8 +289,13 @@ export default function Problems() {
         </div>
       ) : data && data.problems && data.problems.length === 0 ? (
         <div className="card p-10 text-center">
-          <Inbox size={40} className="mx-auto text-gray-500 mb-3" />
-          <p className="text-gray-400">暂无题目</p>
+          <Inbox size={48} className="mx-auto text-gray-600 mb-4" />
+          <p className="text-gray-300 text-lg font-medium mb-2">暂无题目</p>
+          <p className="text-gray-500 text-sm max-w-xs mx-auto">
+            {search || type || difficulty
+              ? '没有找到匹配的题目，试试调整筛选条件或搜索关键词'
+              : '题库中还没有题目，管理员添加题目后将在这里展示'}
+          </p>
         </div>
       ) : (
         <>
@@ -215,7 +307,7 @@ export default function Problems() {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-1">
+            <div className="flex items-center justify-center gap-1 flex-wrap">
               <button
                 disabled={page <= 1}
                 onClick={() =>
@@ -260,6 +352,27 @@ export default function Problems() {
               >
                 <ChevronRight size={18} />
               </button>
+
+              {/* Jump to page */}
+              <span className="text-xs text-gray-500 mx-2">跳至</span>
+              <input
+                type="text"
+                value={jumpPage}
+                onChange={(e) => setJumpPage(e.target.value.replace(/\D/g, ''))}
+                onKeyDown={handleJumpPage}
+                placeholder={`1-${totalPages}`}
+                className="w-14 h-9 text-center text-sm bg-dark-800 border border-dark-700 rounded-md text-white placeholder-gray-600 focus:outline-none focus:border-blue-500"
+              />
+              <span className="text-xs text-gray-500">页</span>
+            </div>
+          )}
+
+          {/* Show simple pagination info when only one page */}
+          {totalPages <= 1 && data && data.problems && data.problems.length > 0 && (
+            <div className="flex items-center justify-center mt-2">
+              <span className="text-sm text-gray-500">
+                共 {data.total} 道题目
+              </span>
             </div>
           )}
         </>
