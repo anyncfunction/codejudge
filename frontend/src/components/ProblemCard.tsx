@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
-import { Code2, ListChecks, PenLine, CheckCircle2 } from 'lucide-react';
+import { Code2, ListChecks, PenLine, CheckCircle2, Star } from 'lucide-react';
+import { useBookmarks } from '../context/BookmarkContext';
 import type { Problem } from '../types';
 
 const typeConfig: Record<Problem['type'], { label: string; icon: React.ReactNode; className: string }> = {
@@ -33,6 +34,8 @@ const difficultyLabel: Record<Problem['difficulty'], string> = {
 };
 
 export default function ProblemCard({ problem }: { problem: Problem }) {
+  const { isBookmarked, toggleBookmark } = useBookmarks();
+  const bookmarked = isBookmarked(problem.id);
   const typeCfg = typeConfig[problem.type];
   const tags = problem.tags ? problem.tags.split(',').map((t) => t.trim()).filter(Boolean) : [];
   const ratio = problem.submission_count > 0
@@ -53,7 +56,18 @@ export default function ProblemCard({ problem }: { problem: Problem }) {
             {problem.title}
           </h3>
         </div>
-        <div className="flex items-center gap-2 flex-shrink-0">
+        <button
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleBookmark(problem.id); }}
+            className="p-1 rounded-md hover:bg-dark-700 transition-colors flex-shrink-0"
+            title={bookmarked ? '取消收藏' : '收藏'}
+          >
+            <Star
+              className={`w-4 h-4 transition-colors ${
+                bookmarked ? 'text-yellow-400 fill-yellow-400' : 'text-dark-500 hover:text-yellow-400'
+              }`}
+            />
+          </button>
+          <div className="flex items-center gap-2 flex-shrink-0">
           <span className={`badge ${typeCfg.className} gap-1`}>
             {typeCfg.icon}
             {typeCfg.label}

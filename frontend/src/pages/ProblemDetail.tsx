@@ -6,6 +6,7 @@ import {
   CheckCircle,
   AlertTriangle,
   Loader2,
+  Star,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../services/api';
@@ -15,6 +16,7 @@ import FillBlankQuestion from '../components/FillBlankQuestion';
 import SubmissionStatus from '../components/SubmissionStatus';
 import MarkdownRenderer from '../components/MarkdownRenderer';
 import type { Problem, Submission, TestCaseResult } from '../types';
+import { useBookmarks } from '../context/BookmarkContext';
 
 const DIFFICULTY_LABELS: Record<string, string> = {
   easy: '简单',
@@ -36,6 +38,7 @@ const TYPE_LABELS: Record<string, string> = {
 
 export default function ProblemDetail() {
   const { id } = useParams<{ id: string }>();
+  const { isBookmarked, toggleBookmark } = useBookmarks();
 
   const [problem, setProblem] = useState<Problem | null>(null);
   const [loading, setLoading] = useState(true);
@@ -349,6 +352,19 @@ export default function ProblemDetail() {
           {/* Problem header */}
           <div className="card p-6 mb-6">
             <div className="flex flex-wrap items-center gap-3 mb-3">
+              <button
+                onClick={() => toggleBookmark(problem.id)}
+                className="p-1 rounded-md hover:bg-dark-700 transition-colors"
+                title={isBookmarked(problem.id) ? '取消收藏' : '收藏'}
+              >
+                <Star
+                  className={`w-5 h-5 transition-colors ${
+                    isBookmarked(problem.id)
+                      ? 'text-yellow-400 fill-yellow-400'
+                      : 'text-dark-500 hover:text-yellow-400'
+                  }`}
+                />
+              </button>
               <h1 className="text-2xl font-bold text-white">
                 {problem.title}
               </h1>

@@ -13,11 +13,13 @@ import {
   PenLine,
   ArrowRightLeft,
   Tag,
+  Star,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../services/api';
 import ProblemCard from '../components/ProblemCard';
 import type { Problem, PaginatedResponse, ProblemStats } from '../types';
+import { useBookmarks } from '../context/BookmarkContext';
 
 const typeOptions = [
   { label: '全部', value: '' },
@@ -52,6 +54,8 @@ export default function Problems() {
   const [searchInput, setSearchInput] = useState(search);
   const [pageSize, setPageSize] = useState(12);
   const [jumpPage, setJumpPage] = useState('');
+  const [bookmarkFilter, setBookmarkFilter] = useState(false);
+  const { isBookmarked } = useBookmarks();
 
   const fetchStats = useCallback(async () => {
     try {
@@ -277,6 +281,18 @@ export default function Problems() {
           ))}
         </div>
 
+        <button
+          onClick={() => setBookmarkFilter(!bookmarkFilter)}
+          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm transition-colors ${
+            bookmarkFilter
+              ? 'bg-yellow-600 text-white'
+              : 'bg-dark-800 text-gray-300 hover:bg-dark-700'
+          }`}
+        >
+          <Star size={14} className={bookmarkFilter ? 'fill-white' : ''} />
+          仅显示收藏
+        </button>
+
         <div className="flex items-center gap-1.5 ml-auto">
           <ArrowRightLeft size={14} className="text-gray-500" />
           {PAGE_SIZE_OPTIONS.map((size) => (
@@ -333,7 +349,10 @@ export default function Problems() {
       ) : (
         <>
           <div className="space-y-3 mb-6">
-            {data?.problems?.map((problem) => (
+            {(bookmarkFilter
+              ? data?.problems?.filter((p) => isBookmarked(p.id))
+              : data?.problems
+            )?.map((problem) => (
               <ProblemCard key={problem.id} problem={problem} />
             ))}
           </div>
