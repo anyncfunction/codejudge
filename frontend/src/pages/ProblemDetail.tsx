@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import {
   ArrowLeft,
   Play,
@@ -12,6 +12,8 @@ import {
   Lightbulb,
   ChevronDown,
   ChevronUp,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../services/api';
@@ -44,7 +46,12 @@ const TYPE_LABELS: Record<string, string> = {
 
 export default function ProblemDetail() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const { isBookmarked, toggleBookmark } = useBookmarks();
+
+  const navigateToProblem = useCallback((newId: number) => {
+    if (newId >= 1) navigate(`/problems/${newId}`);
+  }, [navigate]);
 
   const [problem, setProblem] = useState<Problem | null>(null);
   const [loading, setLoading] = useState(true);
@@ -350,13 +357,30 @@ export default function ProblemDetail() {
 
   return (
     <div>
-      <Link
-        to="/problems"
-        className="inline-flex items-center gap-1 text-gray-400 hover:text-white transition-colors mb-6"
-      >
-        <ArrowLeft size={18} />
-        返回题库
-      </Link>
+      <div className="flex items-center gap-3 mb-6">
+        <Link to="/problems" className="inline-flex items-center gap-1 text-gray-400 hover:text-white transition-colors">
+          <ArrowLeft size={18} />
+          返回题库
+        </Link>
+        <div className="flex items-center gap-1 ml-auto">
+          <button
+            onClick={() => navigateToProblem(Number(id) - 1)}
+            disabled={!id || Number(id) <= 1}
+            className="p-1.5 rounded-md text-dark-400 hover:text-white hover:bg-dark-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            title="上一题"
+          >
+            <ChevronLeft size={18} />
+          </button>
+          <button
+            onClick={() => navigateToProblem(Number(id) + 1)}
+            disabled={!id}
+            className="p-1.5 rounded-md text-dark-400 hover:text-white hover:bg-dark-800 transition-colors"
+            title="下一题"
+          >
+            <ChevronRight size={18} />
+          </button>
+        </div>
+      </div>
 
       {loading ? (
         <div className="card p-8 animate-pulse space-y-4">
