@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { User, Mail, Shield, Award, TrendingUp, Loader2, AlertTriangle, CheckCircle2, XCircle, Clock, Zap, Lock, Key, CalendarDays, Code } from 'lucide-react';
+import { User, Mail, Shield, Award, TrendingUp, Loader2, AlertTriangle, CheckCircle2, XCircle, Clock, Zap, Lock, Key, CalendarDays, Code, PieChart } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import type { Submission } from '../types';
@@ -51,6 +51,7 @@ export default function Profile() {
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [calendarDates, setCalendarDates] = useState<Set<string>>(new Set());
   const [languageStats, setLanguageStats] = useState<{language: string; count: number}[]>([]);
+  const [submissionStatus, setSubmissionStatus] = useState<any[]>([]);
 
   useEffect(() => {
     const token = localStorage.getItem('oj_token');
@@ -65,6 +66,15 @@ export default function Profile() {
       .then(r => r.json())
       .then(data => {
         setLanguageStats(data.languages || []);
+      })
+      .catch(() => {});
+    fetch('/api/submissions?page=1&limit=1000', { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.json())
+      .then(data => {
+        const submissions = data.submissions || [];
+        const statusCount: Record<string, number> = {};
+        submissions.forEach((s: any) => { statusCount[s.status] = (statusCount[s.status] || 0) + 1; });
+        setSubmissionStatus(Object.entries(statusCount).map(([status, count]) => ({ status, count })));
       })
       .catch(() => {});
   }, []);
@@ -232,6 +242,41 @@ export default function Profile() {
                     />
                   </div>
                   <span className="text-xs text-dark-400 w-8">{lang.count}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Status distribution */}
+      {submissionStatus.length > 0 && (
+        <div className="card p-6">
+          <h3 className="text-sm font-semibold text-dark-200 mb-3 flex items-center gap-2">
+            <PieChart className="w-4 h-4 text-purple-400" /> 提交状态分布
+          </h3>
+          <div className="grid grid-cols-2 gap-3">
+            {submissionStatus.map((item: {status: string; count: number}) => {
+              const maxCount = Math.max(...submissionStatus.map((s: any) => s.count));
+              const colorMap: Record<string, string> = {
+                accepted: 'bg-emerald-500', wrong_answer: 'bg-red-500',
+                compile_error: 'bg-yellow-500', time_limit: 'bg-purple-500',
+                runtime_error: 'bg-orange-500',
+              };
+              const labelMap: Record<string, string> = {
+                accepted: '通过', wrong_answer: '答案错误',
+                compile_error: '编译错误', time_limit: '超时',
+                runtime_error: '运行错误',
+              };
+              return (
+                <div key={item.status} className="flex items-center gap-3">
+                  <div className={`w-2.5 h-2.5 rounded-full ${colorMap[item.status] || 'bg-dark-500'}`} />
+                  <span className="flex-1 text-xs text-dark-400">{labelMap[item.status] || item.status}</span>
+                  <div className="flex-1 h-2 bg-dark-700 rounded-full overflow-hidden">
+                    <div className={`h-full ${colorMap[item.status] || 'bg-dark-500'} rounded-full`}
+                      style={{ width: `${(item.count / maxCount) * 100}%` }} />
+                  </div>
+                  <span className="text-xs text-dark-400 w-6 text-right">{item.count}</span>
                 </div>
               );
             })}

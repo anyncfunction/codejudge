@@ -1,6 +1,17 @@
+<div align="center">
+
 # CodeJudge - 在线评测系统
 
+[![GitHub stars](https://img.shields.io/github/stars/anyncfunction/codejudge?style=flat-square&logo=github)](https://github.com/anyncfunction/codejudge)
+[![GitHub license](https://img.shields.io/github/license/anyncfunction/codejudge?style=flat-square)](https://github.com/anyncfunction/codejudge/blob/main/LICENSE)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react)](https://reactjs.org/)
+[![Express](https://img.shields.io/badge/Express-4.x-000000?style=flat-square&logo=express)](https://expressjs.com/)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
+
 一个现代化在线评测平台，支持**编程题**、**选择题**、**填空题**三种题型，对标 LeetCode 式体验。
+
+</div>
 
 ## 特性
 
