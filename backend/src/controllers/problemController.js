@@ -1,4 +1,4 @@
-const { queryAll, queryOne, run } = require('../config/db');
+const { queryAll, queryOne, run, getSafeDb, saveDb } = require('../config/db');
 
 function listProblems(req, res) {
   const { type, difficulty, search, page = 1, limit = 20, sort } = req.query;
@@ -129,6 +129,14 @@ function getAdminStats(req, res) {
   });
 }
 
+function optimizeDatabase(req, res) {
+  const db = getSafeDb();
+  db.run('ANALYZE');
+  db.run('VACUUM');
+  saveDb();
+  res.json({ message: '数据库优化完成' });
+}
+
 function getProblemStats(req, res) {
   const stats = queryOne(`
     SELECT
@@ -174,4 +182,4 @@ function importProblems(req, res) {
   res.json({ message: `成功导入 ${imported} 道题目`, count: imported });
 }
 
-module.exports = { listProblems, getProblem, createProblem, updateProblem, deleteProblem, getProblemStats, getAdminStats, getTagsCloud, exportProblems, importProblems };
+module.exports = { listProblems, getProblem, createProblem, updateProblem, deleteProblem, getProblemStats, getAdminStats, getTagsCloud, exportProblems, importProblems, optimizeDatabase };
