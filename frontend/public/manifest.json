@@ -1,0 +1,12 @@
+{
+  "name": "CodeJudge - 在线评测系统",
+  "short_name": "CodeJudge",
+  "description": "在线编写代码、答题判题，支持编程/选择/填空三种题型",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#3b82f6",
+  "icons": [
+    { "src": "/vite.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
