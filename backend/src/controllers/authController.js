@@ -33,10 +33,12 @@ function login(req, res) {
   if (!user || !bcrypt.compareSync(password, user.password)) {
     return res.status(401).json({ error: '邮箱或密码错误' });
   }
+  // Update last login
+  run('UPDATE users SET last_login = datetime() WHERE id = ?', [user.id]);
   const token = jwt.sign({ id: user.id, username: user.username, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: '7d' });
   res.json({
     token,
-    user: { id: user.id, username: user.username, email: user.email, role: user.role },
+    user: { id: user.id, username: user.username, email: user.email, role: user.role, last_login: new Date().toISOString() },
   });
 }
 

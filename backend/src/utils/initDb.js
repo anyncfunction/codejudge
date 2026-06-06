@@ -11,9 +11,11 @@ async function initDb() {
       email TEXT UNIQUE NOT NULL,
       password TEXT NOT NULL,
       role TEXT DEFAULT 'user',
+      last_login DATETIME,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `);
+  try { exec('ALTER TABLE users ADD COLUMN last_login DATETIME'); } catch {}
 
   exec(`
     CREATE TABLE IF NOT EXISTS problems (
