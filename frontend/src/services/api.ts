@@ -15,6 +15,11 @@ async function request<T>(url: string, options: RequestInit = {}): Promise<T> {
   const res = await fetch(`${BASE}${url}`, { ...options, headers });
 
   if (!res.ok) {
+    if (res.status === 401 && !url.includes('/auth/login') && !url.includes('/auth/register')) {
+      localStorage.removeItem('oj_token');
+      window.location.href = '/login';
+      throw new Error('登录已过期，请重新登录');
+    }
     const err = await res.json().catch(() => ({ error: '网络错误' }));
     throw new Error(err.error || `请求失败 (${res.status})`);
   }
