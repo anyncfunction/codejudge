@@ -47,6 +47,7 @@ const api = {
     delete: (id: number) => request<{ message: string }>(`/problems/${id}`, { method: 'DELETE' }),
     stats: () => request<import('../types').ProblemStats>('/problems/stats'),
     getTags: () => request<{ tags: { name: string; count: number }[] }>('/problems/tags'),
+    getDaily: () => request<{ problem: import('../types').Problem; date: string }>('/problems/daily'),
   },
 
   submissions: {

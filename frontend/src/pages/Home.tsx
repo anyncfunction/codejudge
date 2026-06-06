@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Code2, ListChecks, PenLine, ArrowRight, BookOpen, Sparkles, Zap, Flame } from 'lucide-react';
+import { Code2, ListChecks, PenLine, ArrowRight, BookOpen, Sparkles, Zap, Flame, Calendar } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import ProblemCard from '../components/ProblemCard';
@@ -43,6 +43,8 @@ export default function Home() {
   const { user } = useAuth();
   const [stats, setStats] = useState<ProblemStats | null>(null);
   const [recentProblems, setRecentProblems] = useState<Problem[]>([]);
+  const [daily, setDaily] = useState<{ problem: Problem; date: string } | null>(null);
+  const [dailyLoading, setDailyLoading] = useState(true);
 
   useEffect(() => {
     api.problems.stats().then(setStats).catch(() => {});
@@ -52,6 +54,13 @@ export default function Home() {
         if (res.problems) setRecentProblems(res.problems);
       })
       .catch(() => {});
+    api.problems
+      .getDaily()
+      .then((res) => {
+        if (res.problem) setDaily(res);
+      })
+      .catch(() => {})
+      .finally(() => setDailyLoading(false));
   }, []);
 
   const tagCounts: Record<string, number> = {};
@@ -95,6 +104,70 @@ export default function Home() {
           <ArrowRight size={18} />
         </Link>
       </section>
+
+      {/* Daily Challenge */}
+      {daily && (
+        <section className="pb-16">
+          <Link
+            to={`/problems/${daily.problem.id}`}
+            className="card p-6 group hover:border-primary-500/40 transition-all duration-200 relative overflow-hidden block"
+          >
+            <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/5 rounded-bl-full" />
+            <div className="flex items-center gap-3 mb-4">
+              <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-primary-500/10">
+                <Calendar size={20} className="text-primary-400" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">{daily.date}</p>
+                <h2 className="text-lg font-bold text-white">每日一题</h2>
+              </div>
+            </div>
+            <h3 className="text-xl font-semibold text-white group-hover:text-primary-400 transition-colors mb-3">
+              {daily.problem.title}
+            </h3>
+            <div className="flex items-center gap-2 mb-4">
+              <span className="px-2.5 py-0.5 rounded text-xs font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                {daily.problem.type === 'programming' ? '编程' : daily.problem.type === 'choice' ? '选择' : '填空'}
+              </span>
+              <span
+                className={`px-2.5 py-0.5 rounded text-xs font-medium border ${
+                  daily.problem.difficulty === 'easy'
+                    ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                    : daily.problem.difficulty === 'medium'
+                    ? 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                    : 'bg-red-500/10 text-red-400 border-red-500/20'
+                }`}
+              >
+                {daily.problem.difficulty === 'easy' ? '简单' : daily.problem.difficulty === 'medium' ? '中等' : '困难'}
+              </span>
+            </div>
+            <span className="inline-flex items-center gap-1.5 text-sm text-primary-400 group-hover:text-primary-300 transition-colors">
+              去挑战 <ArrowRight size={14} />
+            </span>
+          </Link>
+        </section>
+      )}
+
+      {/* Daily Loading */}
+      {dailyLoading && !daily && (
+        <section className="pb-16">
+          <div className="card p-6 animate-pulse">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-dark-700" />
+              <div>
+                <div className="h-3 w-20 bg-dark-700 rounded mb-2" />
+                <div className="h-5 w-24 bg-dark-700 rounded" />
+              </div>
+            </div>
+            <div className="h-6 w-3/4 bg-dark-700 rounded mb-3" />
+            <div className="flex items-center gap-2 mb-4">
+              <div className="h-5 w-12 bg-dark-700 rounded" />
+              <div className="h-5 w-12 bg-dark-700 rounded" />
+            </div>
+            <div className="h-4 w-16 bg-dark-700 rounded" />
+          </div>
+        </section>
+      )}
 
       {/* Stats Dashboard */}
       <section className="pb-16">
