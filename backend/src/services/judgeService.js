@@ -74,8 +74,15 @@ function judgeCode(code, language, testCases) {
     }
   }
 
+  const hasCompileError = details.some(d => d.error && d.error.includes('SyntaxError'));
+  let status;
+  if (passed === total) status = 'accepted';
+  else if (hasCompileError) status = 'compile_error';
+  else status = 'wrong_answer';
+
   return {
     passed: passed === total,
+    status,
     score: total > 0 ? Math.round((passed / total) * 100) : 0,
     details: { total, passed, cases: details },
     timeMs: totalTime,

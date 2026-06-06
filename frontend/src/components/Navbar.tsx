@@ -1,11 +1,13 @@
-import { useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Code2, User, LogOut, ShieldCheck } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Code2, User, LogOut, ShieldCheck, Dices } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
+  const [loadingRandom, setLoadingRandom] = useState(false);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -17,6 +19,18 @@ export default function Navbar() {
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, []);
+
+  const handleRandom = async () => {
+    setLoadingRandom(true);
+    try {
+      const data = await fetch('/api/problems/random').then(r => r.json());
+      if (data.problem) {
+        navigate(`/problems/${data.problem.id}`);
+      }
+    } finally {
+      setLoadingRandom(false);
+    }
+  };
 
   const navLinks = [
     { to: '/problems', label: '题库' },
@@ -47,6 +61,14 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
+            <button
+              onClick={handleRandom}
+              disabled={loadingRandom}
+              className="px-4 py-2 rounded-lg text-sm font-medium text-dark-400 hover:text-dark-200 hover:bg-dark-800 transition-colors flex items-center gap-1.5 disabled:opacity-50"
+            >
+              <Dices className="w-4 h-4" />
+              随机
+            </button>
           </div>
         </div>
 

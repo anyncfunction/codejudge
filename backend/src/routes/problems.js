@@ -29,6 +29,16 @@ router.get('/daily', (req, res) => {
 
   res.json({ problem: parsed, date: today });
 });
+router.get('/random', (req, res) => {
+  const count = queryOne('SELECT COUNT(*) as count FROM problems');
+  if (!count || !count.count) return res.json({ problem: null });
+  const offset = Math.floor(Math.random() * count.count);
+  const problem = queryOne('SELECT * FROM problems LIMIT 1 OFFSET ?', [offset]);
+  try { problem.test_cases = JSON.parse(problem.test_cases); } catch { problem.test_cases = []; }
+  try { problem.options = JSON.parse(problem.options); } catch { problem.options = []; }
+  try { problem.blanks_answer = JSON.parse(problem.blanks_answer); } catch { problem.blanks_answer = []; }
+  res.json({ problem });
+});
 router.get('/admin/stats', adminOnly, getAdminStats);
 router.get('/:id', optionalAuth, getProblem);
 router.post('/', adminOnly, createProblem);
