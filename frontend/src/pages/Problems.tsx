@@ -12,6 +12,7 @@ import {
   ListChecks,
   PenLine,
   ArrowRightLeft,
+  Tag,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../services/api';
@@ -46,6 +47,7 @@ export default function Problems() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [stats, setStats] = useState<ProblemStats | null>(null);
+  const [tags, setTags] = useState<{ name: string; count: number }[]>([]);
 
   const [searchInput, setSearchInput] = useState(search);
   const [pageSize, setPageSize] = useState(12);
@@ -60,9 +62,19 @@ export default function Problems() {
     }
   }, []);
 
+  const fetchTags = useCallback(async () => {
+    try {
+      const res = await api.problems.getTags();
+      setTags(res.tags);
+    } catch {
+      // silently ignore tags errors
+    }
+  }, []);
+
   useEffect(() => {
     fetchStats();
-  }, [fetchStats]);
+    fetchTags();
+  }, [fetchStats, fetchTags]);
 
   const fetchProblems = useCallback(async () => {
     setLoading(true);
@@ -207,6 +219,27 @@ export default function Problems() {
           搜索
         </button>
       </div>
+
+      {/* Tags Cloud */}
+      {tags.length > 0 && (
+        <div className="flex flex-wrap items-center gap-2 mb-4">
+          <Tag size={14} className="text-gray-500 shrink-0" />
+          {tags.map((tag) => (
+            <button
+              key={tag.name}
+              onClick={() => updateParams({ search: tag.name, page: '' })}
+              className={`px-2.5 py-0.5 rounded-md text-xs transition-colors ${
+                search === tag.name
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-dark-800 text-gray-400 hover:text-white hover:bg-dark-700'
+              }`}
+            >
+              {tag.name}
+              <span className="ml-1 text-[10px] opacity-60">{tag.count}</span>
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Filters & Page Size */}
       <div className="flex flex-wrap items-center gap-4 mb-6">

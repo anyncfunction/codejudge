@@ -69,6 +69,22 @@ function deleteProblem(req, res) {
   res.json({ message: '题目已删除' });
 }
 
+function getTagsCloud(req, res) {
+  const rows = queryAll('SELECT tags FROM problems WHERE tags IS NOT NULL AND tags != ""');
+  const freq = {};
+  rows.forEach(r => {
+    (r.tags || '').split(',').forEach(t => {
+      const tag = t.trim();
+      if (tag) freq[tag] = (freq[tag] || 0) + 1;
+    });
+  });
+  const tags = Object.entries(freq)
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 30);
+  res.json({ tags });
+}
+
 function getProblemStats(req, res) {
   const stats = queryOne(`
     SELECT
@@ -81,4 +97,4 @@ function getProblemStats(req, res) {
   res.json(stats || { total: 0, programming: 0, choice: 0, fill_blank: 0 });
 }
 
-module.exports = { listProblems, getProblem, createProblem, updateProblem, deleteProblem, getProblemStats };
+module.exports = { listProblems, getProblem, createProblem, updateProblem, deleteProblem, getProblemStats, getTagsCloud };
