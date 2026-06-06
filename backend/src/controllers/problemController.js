@@ -33,6 +33,9 @@ function getProblem(req, res) {
   const problem = queryOne('SELECT * FROM problems WHERE id = ?', [req.params.id]);
   if (!problem) return res.status(404).json({ error: '题目不存在' });
 
+  // Increment view count
+  try { run('UPDATE problems SET view_count = COALESCE(view_count, 0) + 1 WHERE id = ?', [req.params.id]); } catch {}
+
   let parsed = { ...problem };
   try { parsed.test_cases = JSON.parse(problem.test_cases); } catch { parsed.test_cases = []; }
   try { parsed.options = JSON.parse(problem.options); } catch { parsed.options = []; }
