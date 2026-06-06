@@ -36,6 +36,14 @@ router.get('/streak', authenticate, (req, res) => {
   res.json({ streak, todayChecked });
 });
 
+router.get('/language-stats', authenticate, (req, res) => {
+  const stats = queryAll(
+    'SELECT language, COUNT(*) as count FROM submissions WHERE user_id = ? AND language IS NOT NULL AND language != "" GROUP BY language ORDER BY count DESC',
+    [req.user.id]
+  );
+  res.json({ languages: stats });
+});
+
 router.get('/leaderboard', async (req, res) => {
   try {
     const rows = queryAll(`

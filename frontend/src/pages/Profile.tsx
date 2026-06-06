@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { User, Mail, Shield, Award, TrendingUp, Loader2, AlertTriangle, CheckCircle2, XCircle, Clock, Zap, Lock, Key, CalendarDays } from 'lucide-react';
+import { User, Mail, Shield, Award, TrendingUp, Loader2, AlertTriangle, CheckCircle2, XCircle, Clock, Zap, Lock, Key, CalendarDays, Code } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import type { Submission } from '../types';
@@ -50,6 +50,7 @@ export default function Profile() {
   const [passwordMessage, setPasswordMessage] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [calendarDates, setCalendarDates] = useState<Set<string>>(new Set());
+  const [languageStats, setLanguageStats] = useState<{language: string; count: number}[]>([]);
 
   useEffect(() => {
     const token = localStorage.getItem('oj_token');
@@ -58,6 +59,12 @@ export default function Profile() {
       .then(r => r.json())
       .then(data => {
         setCalendarDates(new Set(data.dates || []));
+      })
+      .catch(() => {});
+    fetch('/api/auth/language-stats', { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.json())
+      .then(data => {
+        setLanguageStats(data.languages || []);
       })
       .catch(() => {});
   }, []);
@@ -205,6 +212,32 @@ export default function Profile() {
           <p className="text-2xl font-bold text-purple-400">{uniqueProblems}</p>
         </div>
       </div>
+
+      {/* Language usage */}
+      {languageStats.length > 0 && (
+        <div className="card p-6">
+          <h3 className="text-sm font-semibold text-dark-200 mb-3 flex items-center gap-2">
+            <Code className="w-4 h-4 text-blue-400" /> 使用语言统计
+          </h3>
+          <div className="space-y-2">
+            {languageStats.map((lang: {language: string; count: number}) => {
+              const maxCount = Math.max(...languageStats.map((l: any) => l.count));
+              return (
+                <div key={lang.language} className="flex items-center gap-3">
+                  <span className="w-24 text-xs text-dark-400 text-right">{lang.language || '未知'}</span>
+                  <div className="flex-1 h-4 bg-dark-700 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-primary-500 rounded-full transition-all duration-500"
+                      style={{ width: `${(lang.count / maxCount) * 100}%` }}
+                    />
+                  </div>
+                  <span className="text-xs text-dark-400 w-8">{lang.count}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       <GamificationSection />
 
