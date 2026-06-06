@@ -85,6 +85,41 @@ function getTagsCloud(req, res) {
   res.json({ tags });
 }
 
+function getAdminStats(req, res) {
+  const totalProblems = queryOne('SELECT COUNT(*) as count FROM problems').count;
+  const totalUsers = queryOne('SELECT COUNT(*) as count FROM users').count;
+  const totalSubmissions = queryOne('SELECT COUNT(*) as count FROM submissions').count;
+  const acceptedCount = queryOne("SELECT COUNT(*) as count FROM submissions WHERE status = 'accepted'").count;
+
+  const byType = queryAll(`
+    SELECT p.type, COUNT(*) as count
+    FROM submissions s JOIN problems p ON s.problem_id = p.id
+    GROUP BY p.type
+  `);
+
+  const topUsers = queryAll(`
+    SELECT u.username, COUNT(*) as submission_count
+    FROM submissions s JOIN users u ON s.user_id = u.id
+    GROUP BY u.id ORDER BY submission_count DESC LIMIT 5
+  `);
+
+  const recent24h = queryOne(`
+    SELECT COUNT(*) as count FROM submissions
+    WHERE created_at >= datetime('now', '-1 day')
+  `).count;
+
+  res.json({
+    totalProblems,
+    totalUsers,
+    totalSubmissions,
+    acceptedCount,
+    acceptanceRate: totalSubmissions > 0 ? Math.round((acceptedCount / totalSubmissions) * 100) : 0,
+    byType: Object.fromEntries(byType.map(r => [r.type, r.count])),
+    topUsers,
+    recent24h,
+  });
+}
+
 function getProblemStats(req, res) {
   const stats = queryOne(`
     SELECT
@@ -97,4 +132,4 @@ function getProblemStats(req, res) {
   res.json(stats || { total: 0, programming: 0, choice: 0, fill_blank: 0 });
 }
 
-module.exports = { listProblems, getProblem, createProblem, updateProblem, deleteProblem, getProblemStats, getTagsCloud };
+module.exports = { listProblems, getProblem, createProblem, updateProblem, deleteProblem, getProblemStats, getAdminStats, getTagsCloud };

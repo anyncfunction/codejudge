@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Edit, Trash2, Users, Code, BarChart3, AlertTriangle, Loader2 } from 'lucide-react';
+import { Plus, Edit, Trash2, Users, Code, BarChart3, AlertTriangle, Loader2, Activity, Percent, Clock } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
-import type { Problem, ProblemStats } from '../types';
+import type { Problem, ProblemStats, AdminStats } from '../types';
 
 export default function Admin() {
   const { user } = useAuth();
@@ -12,6 +12,7 @@ export default function Admin() {
 
   const [problems, setProblems] = useState<Problem[]>([]);
   const [stats, setStats] = useState<ProblemStats | null>(null);
+  const [adminStats, setAdminStats] = useState<AdminStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<number | null>(null);
@@ -26,6 +27,13 @@ export default function Admin() {
       ]);
       setProblems(problemsRes.problems ?? []);
       setStats(statsRes);
+
+      if (user?.role === 'admin') {
+        try {
+          const adminRes = await api.problems.getAdminStats();
+          setAdminStats(adminRes);
+        } catch { /* silently ignore */ }
+      }
     } catch (err: any) {
       const msg = err.message || '加载数据失败';
       setError(msg);
@@ -91,7 +99,7 @@ export default function Admin() {
 
       {/* Stats */}
       {stats && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <div className="card p-5 flex items-center gap-4">
             <div className="p-3 bg-blue-600/20 rounded-lg">
               <BarChart3 size={24} className="text-blue-400" />
@@ -123,6 +131,53 @@ export default function Admin() {
                 {stats.choice + stats.fill_blank}
               </p>
               <p className="text-sm text-gray-400">选择/填空题</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <h2 className="text-lg font-semibold text-white mb-4">系统概览</h2>
+
+      {/* Admin Analytics */}
+      {adminStats && (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <div className="card p-5 flex items-center gap-4">
+            <div className="p-3 bg-indigo-600/20 rounded-lg">
+              <Users size={24} className="text-indigo-400" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-white">{adminStats.totalUsers}</p>
+              <p className="text-sm text-gray-400">总用户数</p>
+            </div>
+          </div>
+
+          <div className="card p-5 flex items-center gap-4">
+            <div className="p-3 bg-cyan-600/20 rounded-lg">
+              <Activity size={24} className="text-cyan-400" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-white">{adminStats.totalSubmissions}</p>
+              <p className="text-sm text-gray-400">总提交数</p>
+            </div>
+          </div>
+
+          <div className="card p-5 flex items-center gap-4">
+            <div className="p-3 bg-emerald-600/20 rounded-lg">
+              <Percent size={24} className="text-emerald-400" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-white">{adminStats.acceptanceRate}%</p>
+              <p className="text-sm text-gray-400">通过率</p>
+            </div>
+          </div>
+
+          <div className="card p-5 flex items-center gap-4">
+            <div className="p-3 bg-orange-600/20 rounded-lg">
+              <Clock size={24} className="text-orange-400" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-white">{adminStats.recent24h}</p>
+              <p className="text-sm text-gray-400">24h 提交</p>
             </div>
           </div>
         </div>

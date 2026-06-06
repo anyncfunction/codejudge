@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const { queryOne } = require('../config/db');
-const { listProblems, getProblem, createProblem, updateProblem, deleteProblem, getProblemStats, getTagsCloud } = require('../controllers/problemController');
+const { listProblems, getProblem, createProblem, updateProblem, deleteProblem, getProblemStats, getAdminStats, getTagsCloud } = require('../controllers/problemController');
 const { getTemplate } = require('../services/judgeService');
 const { optionalAuth, adminOnly } = require('../middleware/auth');
 
@@ -29,6 +29,7 @@ router.get('/daily', (req, res) => {
 
   res.json({ problem: parsed, date: today });
 });
+router.get('/admin/stats', adminOnly, getAdminStats);
 router.get('/:id', optionalAuth, getProblem);
 router.post('/', adminOnly, createProblem);
 router.put('/:id', adminOnly, updateProblem);

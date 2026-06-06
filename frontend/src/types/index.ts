@@ -85,3 +85,14 @@ export interface ProblemStats {
   choice: number;
   fill_blank: number;
 }
+
+export interface AdminStats {
+  totalProblems: number;
+  totalUsers: number;
+  totalSubmissions: number;
+  acceptedCount: number;
+  acceptanceRate: number;
+  byType: Record<string, number>;
+  topUsers: { username: string; submission_count: number }[];
+  recent24h: number;
+}
