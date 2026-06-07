@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Plus, Edit, Trash2, Users, Shield, Code, BarChart3, AlertTriangle, Loader2, Activity, Percent, Clock, Download, Upload } from 'lucide-react';
+import { Plus, Edit, Trash2, Users, Shield, Code, BarChart3, AlertTriangle, Loader2, Activity, Percent, Clock, Download, Upload, Trophy } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
@@ -271,6 +271,35 @@ export default function Admin() {
               <p className="text-2xl font-bold text-white">{adminStats.recent24h}</p>
               <p className="text-sm text-gray-400">24h 提交</p>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Top Users */}
+      {adminStats?.topUsers && adminStats.topUsers.length > 0 && (
+        <div className="card p-6 mb-6">
+          <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+            <Trophy className="w-5 h-5 text-amber-400" /> 活跃用户 Top 10
+          </h2>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-dark-700">
+                  <th className="text-left py-2 px-3 text-dark-400">#</th>
+                  <th className="text-left py-2 px-3 text-dark-400">用户名</th>
+                  <th className="text-right py-2 px-3 text-dark-400">提交次数</th>
+                </tr>
+              </thead>
+              <tbody>
+                {adminStats.topUsers.map((u: any, i: number) => (
+                  <tr key={i} className="border-b border-dark-800">
+                    <td className="py-2 px-3 text-dark-400">{i + 1}</td>
+                    <td className="py-2 px-3 text-white">{u.username}</td>
+                    <td className="py-2 px-3 text-dark-300 text-right">{u.submission_count}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       )}
