@@ -85,6 +85,7 @@ export default function ProblemDetail() {
   const [customOutput, setCustomOutput] = useState<{stdout?: string; stderr?: string; time?: number} | null>(null);
   const [customRunning, setCustomRunning] = useState(false);
   const [similarProblems, setSimilarProblems] = useState<Problem[] | null>(null);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const CODE_SAVE_KEY = `cj_code_${id}_${language}`;
 
@@ -186,6 +187,11 @@ export default function ProblemDetail() {
       toast.error('请填写答案');
       return;
     }
+    if (!showConfirm) {
+      setShowConfirm(true);
+      return;
+    }
+    setShowConfirm(false);
 
     setSubmitting(true);
     setSubmissionResult(null);
@@ -227,6 +233,7 @@ export default function ProblemDetail() {
     const handler = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
         e.preventDefault();
+        setShowConfirm(false);
         handleSubmit();
       }
     };
@@ -679,23 +686,32 @@ export default function ProblemDetail() {
             )}
 
             <div className="flex items-center gap-3 mt-4">
-              <button
-                onClick={handleSubmit}
-                disabled={submitting}
-                className="btn-primary inline-flex items-center gap-2"
-              >
-                {submitting ? (
-                  <>
-                    <Loader2 size={18} className="animate-spin" />
-                    提交中...
-                  </>
-                ) : (
-                  <>
-                    <Play size={18} />
-                    提交
-                  </>
-                )}
-              </button>
+              {showConfirm && (
+                <div className="flex items-center gap-2 bg-dark-800 border border-dark-600 rounded-lg px-4 py-2">
+                  <span className="text-sm text-dark-200">确认提交？</span>
+                  <button onClick={() => { setShowConfirm(false); handleSubmit(); }} className="btn-primary text-xs px-3 py-1">确认</button>
+                  <button onClick={() => setShowConfirm(false)} className="btn-secondary text-xs px-3 py-1">取消</button>
+                </div>
+              )}
+              {!showConfirm && (
+                <button
+                  onClick={handleSubmit}
+                  disabled={submitting}
+                  className="btn-primary inline-flex items-center gap-2"
+                >
+                  {submitting ? (
+                    <>
+                      <Loader2 size={18} className="animate-spin" />
+                      提交中...
+                    </>
+                  ) : (
+                    <>
+                      <Play size={18} />
+                      提交
+                    </>
+                  )}
+                </button>
+              )}
               <span className="text-xs text-dark-400">Ctrl+Enter 快速提交</span>
             </div>
             </div>
