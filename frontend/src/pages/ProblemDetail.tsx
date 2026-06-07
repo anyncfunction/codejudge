@@ -599,6 +599,16 @@ export default function ProblemDetail() {
               <span className="px-2 py-0.5 bg-blue-600 rounded text-xs text-white">
                 {TYPE_LABELS[problem.type] || problem.type}
               </span>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(String(problem.id));
+                  toast.success('ID 已复制');
+                }}
+                className="px-2 py-0.5 rounded text-xs text-dark-400 hover:text-white hover:bg-dark-800 transition-colors font-mono"
+                title="复制题目 ID"
+              >
+                #{problem.id}
+              </button>
               <span className="text-xs text-dark-400 flex items-center gap-3">
                 <span title="提交次数"><Zap size={12} className="inline" /> {problem.submission_count ?? 0}</span>
                 <span title="通过次数"><CheckCircle size={12} className="inline text-green-400" /> {problem.accepted_count ?? 0}</span>

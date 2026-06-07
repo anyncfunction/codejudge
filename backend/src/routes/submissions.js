@@ -54,6 +54,10 @@ router.post('/admin/rejudge/:id', authenticate, adminOnly, (req, res) => {
     res.status(500).json({ error: e.message });
   }
 });
+router.delete('/admin/:id', authenticate, adminOnly, (req, res) => {
+  run('DELETE FROM submissions WHERE id = ?', [req.params.id]);
+  res.json({ message: '提交记录已删除' });
+});
 router.get('/:id', authenticate, getSubmission);
 
 module.exports = router;

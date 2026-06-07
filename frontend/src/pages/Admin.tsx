@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Plus, Edit, Trash2, Users, Shield, Code, BarChart3, AlertTriangle, Loader2, Activity, Percent, Clock, Download, Upload, Trophy, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, Edit, Trash2, Users, Shield, Code, BarChart3, AlertTriangle, Loader2, Activity, Percent, Clock, Download, Upload, Trophy, ChevronLeft, ChevronRight, RefreshCw } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
@@ -155,6 +155,21 @@ export default function Admin() {
     finally { setAllLoading(false); }
   };
 
+  const handleDeleteSubmission = (id: number) => {
+    setConfirmTitle('删除提交记录');
+    setConfirmMessage(`确定要删除提交 #${id} 吗？`);
+    setConfirmAction(() => async () => {
+      try {
+        const token = localStorage.getItem('oj_token');
+        await fetch(`/api/submissions/admin/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
+        toast.success('提交记录已删除');
+        setAllSubmissions(prev => prev.filter(s => s.id !== id));
+      } catch { toast.error('删除失败'); }
+      setConfirmOpen(false);
+    });
+    setConfirmOpen(true);
+  };
+
   const handleRejudge = async (id: number) => {
     setRejudgingId(id);
     try {
@@ -246,7 +261,22 @@ export default function Admin() {
         </div>
       )}
 
-      <h2 className="text-lg font-semibold text-white mb-4">系统概览</h2>
+      <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+        系统概览
+        <button
+          onClick={async () => {
+            try {
+              const res = await api.problems.getAdminStats();
+              setAdminStats(res);
+              toast.success('统计已刷新');
+            } catch {}
+          }}
+          className="ml-auto p-1.5 rounded-md text-dark-400 hover:text-white hover:bg-dark-800 transition-colors"
+          title="刷新统计"
+        >
+          <RefreshCw size={14} />
+        </button>
+      </h2>
 
       {/* Admin Analytics */}
       {adminStats && (
@@ -613,13 +643,19 @@ export default function Admin() {
                         <SubmissionStatus status={s.status} score={s.score} />
                       </td>
                       <td className="py-2 px-3 text-dark-400 hidden md:table-cell text-xs">{s.created_at?.slice(0, 16).replace('T', ' ')}</td>
-                      <td className="py-2 px-3 text-center">
+                      <td className="py-2 px-3 text-center flex items-center justify-center gap-2">
                         <button
                           onClick={() => handleRejudge(s.id)}
                           disabled={rejudgingId === s.id}
                           className="text-xs text-cyan-400 hover:text-cyan-300 disabled:opacity-50 transition-colors"
                         >
                           {rejudgingId === s.id ? <Loader2 className="w-3.5 h-3.5 animate-spin mx-auto" /> : '重判'}
+                        </button>
+                        <button
+                          onClick={() => handleDeleteSubmission(s.id)}
+                          className="text-xs text-red-400 hover:text-red-300 transition-colors"
+                        >
+                          删除
                         </button>
                       </td>
                     </tr>

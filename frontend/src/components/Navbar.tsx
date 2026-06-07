@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Code2, LogOut, ShieldCheck, Dices, Menu, X, Activity, Hash } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import api from '../services/api';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -26,10 +27,8 @@ export default function Navbar() {
       }
       if (e.key === 'u' && !['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement).tagName) && user) {
         e.preventDefault();
-        fetch('/api/problems/random-unsolved', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('oj_token')}` },
-        }).then(r => r.json()).then(data => {
-          if (data.problem) navigate(`/problems/${data.problem.id}`);
+        api.problems.randomUnsolved().then(data => {
+          if (data?.id) navigate(`/problems/${data.id}`);
         }).catch(() => {});
       }
     };
@@ -40,10 +39,8 @@ export default function Navbar() {
   const handleRandom = async () => {
     setLoadingRandom(true);
     try {
-      const data = await fetch('/api/problems/random').then(r => r.json());
-      if (data.problem) {
-        navigate(`/problems/${data.problem.id}`);
-      }
+      const data = await api.problems.random();
+      if (data?.id) navigate(`/problems/${data.id}`);
     } finally {
       setLoadingRandom(false);
     }
@@ -91,11 +88,8 @@ export default function Navbar() {
               <button
                 onClick={async () => {
                   try {
-                    const token = localStorage.getItem('oj_token');
-                    const data = await fetch('/api/problems/random-unsolved', {
-                      headers: { Authorization: `Bearer ${token}` },
-                    }).then(r => r.json());
-                    if (data.problem) navigate(`/problems/${data.problem.id}`);
+                    const data = await api.problems.randomUnsolved();
+                    if (data?.id) navigate(`/problems/${data.id}`);
                   } catch {}
                 }}
                 className="px-4 py-2 rounded-lg text-sm font-medium text-dark-400 hover:text-dark-200 hover:bg-dark-800 transition-colors flex items-center gap-1.5"
