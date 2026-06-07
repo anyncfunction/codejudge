@@ -23,6 +23,7 @@ export default function Admin() {
   const [allLoading, setAllLoading] = useState(false);
   const [dbOptimizing, setDbOptimizing] = useState(false);
   const [rejudgingId, setRejudgingId] = useState<number | null>(null);
+  const [systemInfo, setSystemInfo] = useState<any>(null);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -43,6 +44,10 @@ export default function Admin() {
         try {
           const userRes = await fetch('/api/auth/admin/users', { headers: { Authorization: `Bearer ${localStorage.getItem('oj_token')}` } });
           if (userRes.ok) setUsers((await userRes.json()).users);
+        } catch {}
+        try {
+          const healthRes = await fetch('/api/health');
+          if (healthRes.ok) setSystemInfo(await healthRes.json());
         } catch {}
       }
     } catch (err: any) {
@@ -265,6 +270,36 @@ export default function Admin() {
             <div>
               <p className="text-2xl font-bold text-white">{adminStats.recent24h}</p>
               <p className="text-sm text-gray-400">24h 提交</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* System Info */}
+      {systemInfo && (
+        <div className="card p-6 mb-6">
+          <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+            <Activity className="w-5 h-5 text-green-400" /> 系统状态
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div>
+              <p className="text-xs text-dark-500">运行时间</p>
+              <p className="text-sm text-white font-mono">{systemInfo.uptime || '-'}</p>
+            </div>
+            <div>
+              <p className="text-xs text-dark-500">版本</p>
+              <p className="text-sm text-white font-mono">{systemInfo.version || '-/-'}</p>
+            </div>
+            <div>
+              <p className="text-xs text-dark-500">状态</p>
+              <p className="text-sm text-green-400 flex items-center gap-1">
+                <span className="w-2 h-2 rounded-full bg-green-400 inline-block" />
+                运行中
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-dark-500">数据库</p>
+              <p className="text-sm text-white font-mono">SQLite</p>
             </div>
           </div>
         </div>
