@@ -84,6 +84,7 @@ export default function ProblemDetail() {
   const [customInput, setCustomInput] = useState('');
   const [customOutput, setCustomOutput] = useState<{stdout?: string; stderr?: string; time?: number} | null>(null);
   const [customRunning, setCustomRunning] = useState(false);
+  const [similarProblems, setSimilarProblems] = useState<Problem[] | null>(null);
 
   const CODE_SAVE_KEY = `cj_code_${id}_${language}`;
 
@@ -134,6 +135,14 @@ export default function ProblemDetail() {
       loadTemplate(language);
     }
   }, [problem?.type, language, loadTemplate]);
+
+  useEffect(() => {
+    if (problem?.tags) {
+      api.problems.getSimilar(problem.id, problem.tags).then(setSimilarProblems).catch(() => setSimilarProblems([]));
+    } else {
+      setSimilarProblems([]);
+    }
+  }, [problem?.id, problem?.tags]);
 
   useEffect(() => {
     if (!code || problem?.type !== 'programming') return;
@@ -689,7 +698,29 @@ export default function ProblemDetail() {
               </button>
               <span className="text-xs text-dark-400">Ctrl+Enter 快速提交</span>
             </div>
-          </div>
+            </div>
+
+            {/* Similar problems */}
+            {similarProblems !== null && similarProblems.length > 0 && (
+              <div className="card p-4 mt-4">
+                <h3 className="text-sm font-semibold text-dark-200 mb-3">相似题目</h3>
+                <div className="flex flex-wrap gap-2">
+                  {similarProblems.map(p => (
+                    <Link
+                      key={p.id}
+                      to={`/problems/${p.id}`}
+                      className={`px-3 py-1.5 rounded-lg text-xs border transition-colors ${
+                        DIFFICULTY_COLORS[p.difficulty]
+                          ? `bg-${DIFFICULTY_COLORS[p.difficulty]}/10 border-${DIFFICULTY_COLORS[p.difficulty]}/30`
+                          : 'bg-dark-700 border-dark-600'
+                      } hover:opacity-80`}
+                    >
+                      #{p.id} {p.title}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
 
           {/* Result panel */}
           {renderResultPanel()}

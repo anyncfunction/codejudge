@@ -217,4 +217,20 @@ function importProblems(req, res) {
   res.json({ message: `成功导入 ${imported} 道题目`, count: imported });
 }
 
-module.exports = { listProblems, getProblem, createProblem, updateProblem, deleteProblem, getProblemStats, getAdminStats, getTagsCloud, exportProblems, importProblems, optimizeDatabase };
+function getSimilarProblems(req, res) {
+  const { tags } = req.query;
+  if (!tags) return res.json([]);
+  const tagArr = tags.split(',');
+  const problems = queryAll(
+    'SELECT id, title, type, difficulty, tags, accepted_count, submission_count FROM problems WHERE id != ?',
+    [req.params.id]
+  );
+  const scored = problems.map(p => {
+    const pTags = (p.tags || '').split(',');
+    const matches = tagArr.filter(t => pTags.includes(t)).length;
+    return { ...p, matches };
+  }).filter(p => p.matches > 0).sort((a, b) => b.matches - a.matches).slice(0, 5);
+  res.json(scored);
+}
+
+module.exports = { listProblems, getProblem, createProblem, updateProblem, deleteProblem, getProblemStats, getAdminStats, getTagsCloud, exportProblems, importProblems, optimizeDatabase, getSimilarProblems };

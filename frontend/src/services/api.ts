@@ -49,6 +49,7 @@ const api = {
       return request<import('../types').PaginatedResponse<import('../types').Problem>>(`/problems?${q}`);
     },
     get: (id: number) => request<import('../types').Problem>(`/problems/${id}`),
+    getSimilar: (id: number, tags: string) => request<import('../types').Problem[]>(`/problems/${id}/similar?tags=${encodeURIComponent(tags)}`),
     getTemplate: (language: string) => request<{ template: string }>(`/problems/templates/${language}`),
     create: (body: Partial<import('../types').Problem>) =>
       request<{ id: number; message: string }>('/problems', { method: 'POST', body: JSON.stringify(body) }),
