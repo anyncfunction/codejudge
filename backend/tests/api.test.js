@@ -64,12 +64,18 @@ describe('CodeJudge API Tests', () => {
   });
 
   it('POST /submissions choice answer works', async () => {
+    const login = await fetch(`${BASE}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: 'admin@oj.com', password: 'admin123' }),
+    });
+    const { token } = await login.json();
     const res = await fetch(`${BASE}/submissions`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       body: JSON.stringify({ problem_id: 5000, answer: 0 }),
     });
     const data = await res.json();
-    assert.ok(['accepted', 'wrong_answer'].includes(data.status));
+    assert.ok(['accepted', 'wrong_answer'].includes(data.status), `Expected accepted/wrong_answer, got ${data.status} - response: ${JSON.stringify(data)}`);
   });
 });

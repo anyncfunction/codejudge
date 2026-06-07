@@ -37,13 +37,9 @@ function validateProblem(body) {
 
 function validateSubmission(body) {
   const errors = [];
-  const { problem_id, code, language, type } = body;
+  const { problem_id } = body;
   if (problem_id === undefined || problem_id === null || isNaN(Number(problem_id))) {
     errors.push('problem_id 必须为数字');
-  }
-  if (type === 'programming' || !type) {
-    if (!code) errors.push('编程题必须提供代码');
-    if (!language) errors.push('编程题必须提供编程语言');
   }
   return errors.length ? errors : null;
 }
