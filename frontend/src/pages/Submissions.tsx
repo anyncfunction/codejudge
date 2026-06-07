@@ -239,8 +239,13 @@ export default function Submissions() {
                       >
                         <div className="grid grid-cols-6 items-center py-2 hover:bg-dark-800/50 rounded transition-colors">
                           <div className="px-4 text-white font-medium truncate">
-                            {submission.problem_title ??
-                              `#${submission.problem_id}`}
+                            <Link
+                              to={`/problems/${submission.problem_id}`}
+                              onClick={(e) => e.stopPropagation()}
+                              className="hover:text-primary-400 transition-colors"
+                            >
+                              {submission.problem_title ?? `#${submission.problem_id}`}
+                            </Link>
                           </div>
                           <div className="px-4">
                             <SubmissionStatus
@@ -277,15 +282,29 @@ export default function Submissions() {
                             </Link>
                             {submission.code && (
                               <div className="mb-3">
-                                <div className="flex items-center justify-between mb-1">
-                                  <p className="text-xs text-dark-500">提交代码</p>
-                                  <button
-                                    onClick={() => { navigator.clipboard.writeText(submission.code); toast.success('代码已复制'); }}
-                                    className="flex items-center gap-1 text-xs text-dark-400 hover:text-white transition-colors"
-                                  >
-                                    <Clipboard className="w-3.5 h-3.5" /> 复制
-                                  </button>
-                                </div>
+                                  <div className="flex items-center justify-between mb-1">
+                                    <p className="text-xs text-dark-500">提交代码</p>
+                                    <div className="flex items-center gap-2">
+                                      <button
+                                        onClick={() => {
+                                          const blob = new Blob([submission.code], { type: 'text/plain' });
+                                          const url = URL.createObjectURL(blob);
+                                          const a = document.createElement('a'); a.href = url;
+                                          a.download = `submission_${submission.id}.${submission.language === 'python' ? 'py' : 'js'}`;
+                                          a.click(); URL.revokeObjectURL(url);
+                                        }}
+                                        className="flex items-center gap-1 text-xs text-dark-400 hover:text-white transition-colors"
+                                      >
+                                        <Send className="w-3.5 h-3.5" /> 下载
+                                      </button>
+                                      <button
+                                        onClick={() => { navigator.clipboard.writeText(submission.code); toast.success('代码已复制'); }}
+                                        className="flex items-center gap-1 text-xs text-dark-400 hover:text-white transition-colors"
+                                      >
+                                        <Clipboard className="w-3.5 h-3.5" /> 复制
+                                      </button>
+                                    </div>
+                                  </div>
                                 <pre className="bg-dark-900 rounded p-3 text-sm text-dark-300 overflow-auto max-h-60">{submission.code}</pre>
                               </div>
                             )}

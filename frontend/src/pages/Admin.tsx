@@ -1,10 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Plus, Edit, Trash2, Users, Shield, Code, BarChart3, AlertTriangle, Loader2, Activity, Percent, Clock, Download, Upload } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import type { Problem, ProblemStats, AdminStats } from '../types';
+import SubmissionStatus from '../components/SubmissionStatus';
 
 export default function Admin() {
   const { user } = useAuth();
@@ -18,6 +19,8 @@ export default function Admin() {
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [users, setUsers] = useState<any[]>([]);
   const [usersLoading, setUsersLoading] = useState(false);
+  const [allSubmissions, setAllSubmissions] = useState<any[]>([]);
+  const [allLoading, setAllLoading] = useState(false);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -114,6 +117,17 @@ export default function Admin() {
         toast.error(data.error || '删除失败');
       }
     } catch { toast.error('删除失败'); }
+  };
+
+  const fetchAllSubmissions = async () => {
+    setAllLoading(true);
+    try {
+      const token = localStorage.getItem('oj_token');
+      const res = await fetch('/api/submissions/admin/all', { headers: { Authorization: `Bearer ${token}` } });
+      const data = await res.json();
+      setAllSubmissions(data.submissions || []);
+    } catch { toast.error('加载失败'); }
+    finally { setAllLoading(false); }
   };
 
   const TYPE_LABELS: Record<string, string> = {
@@ -385,8 +399,52 @@ export default function Admin() {
               ))}
             </tbody>
           </table>
-        </div>
-      )}
+          </div>
+        )}
+
+      {/* All Submissions */}
+      <div className="card p-6 mt-6">
+        <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+          <Activity className="w-5 h-5 text-cyan-400" /> 所有提交
+        </h2>
+        {allSubmissions.length === 0 ? (
+          <button onClick={fetchAllSubmissions} className="btn-secondary text-sm inline-flex items-center gap-2">
+            {allLoading && <Loader2 className="w-4 h-4 animate-spin" />}
+            加载提交记录
+          </button>
+        ) : (
+          <div className="overflow-x-auto max-h-96 overflow-y-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-dark-700">
+                  <th className="text-left py-2 px-3 text-dark-400">ID</th>
+                  <th className="text-left py-2 px-3 text-dark-400">用户</th>
+                  <th className="text-left py-2 px-3 text-dark-400">题目</th>
+                  <th className="text-left py-2 px-3 text-dark-400">状态</th>
+                  <th className="text-left py-2 px-3 text-dark-400 hidden md:table-cell">时间</th>
+                </tr>
+              </thead>
+              <tbody>
+                {allSubmissions.map((s: any) => (
+                  <tr key={s.id} className="border-b border-dark-800 hover:bg-dark-800/50">
+                    <td className="py-2 px-3 text-dark-400">{s.id}</td>
+                    <td className="py-2 px-3 text-white">{s.username}</td>
+                    <td className="py-2 px-3">
+                      <Link to={`/problems/${s.problem_id}`} className="text-blue-400 hover:text-blue-300">
+                        {s.problem_title || `#${s.problem_id}`}
+                      </Link>
+                    </td>
+                    <td className="py-2 px-3">
+                      <SubmissionStatus status={s.status} score={s.score} />
+                    </td>
+                    <td className="py-2 px-3 text-dark-400 hidden md:table-cell text-xs">{s.created_at?.slice(0, 16).replace('T', ' ')}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
