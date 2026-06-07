@@ -63,6 +63,7 @@ export default function ProblemCard({ problem }: { problem: Problem }) {
             </span>
           )}
           <h3 className="text-lg font-semibold text-white truncate group-hover:text-primary-400 transition-colors">
+            <span className="text-dark-500 font-mono text-sm mr-1.5">#{problem.id}</span>
             {problem.title}
           </h3>
         </div>
