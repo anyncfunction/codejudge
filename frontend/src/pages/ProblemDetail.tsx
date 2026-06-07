@@ -89,6 +89,7 @@ export default function ProblemDetail() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [recentSubs, setRecentSubs] = useState<Submission[]>([]);
   const [sampleCaseIndex, setSampleCaseIndex] = useState(0);
+  const [saved, setSaved] = useState(true);
 
   const CODE_SAVE_KEY = `cj_code_${id}_${language}`;
 
@@ -157,8 +158,10 @@ export default function ProblemDetail() {
 
   useEffect(() => {
     if (!code || problem?.type !== 'programming') return;
+    setSaved(false);
     const timer = setTimeout(() => {
       localStorage.setItem(CODE_SAVE_KEY, code);
+      setSaved(true);
     }, 1000);
     return () => clearTimeout(timer);
   }, [code, CODE_SAVE_KEY, problem?.type]);
@@ -600,6 +603,9 @@ export default function ProblemDetail() {
                       {lang === 'javascript' ? 'JavaScript' : 'Python'}
                     </button>
                   ))}
+                  <span className={`ml-auto text-[10px] self-center transition-opacity ${saved ? 'text-emerald-500/70' : 'text-yellow-500/70 opacity-0'}`}>
+                    {saved ? '已保存' : '保存中...'}
+                  </span>
                 </div>
 
                 {/* Hint panel */}
