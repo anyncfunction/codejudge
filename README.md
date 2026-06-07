@@ -64,6 +64,8 @@ git clone https://github.com/anyncfunction/codejudge.git
 cd codejudge
 ```
 
+> 如果网络不稳定，可使用镜像加速：`git clone https://hub.fastgit.xyz/anyncfunction/codejudge.git`
+
 ### 2. 安装依赖
 
 ```bash
