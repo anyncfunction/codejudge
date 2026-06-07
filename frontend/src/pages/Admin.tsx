@@ -21,6 +21,7 @@ export default function Admin() {
   const [usersLoading, setUsersLoading] = useState(false);
   const [allSubmissions, setAllSubmissions] = useState<any[]>([]);
   const [allLoading, setAllLoading] = useState(false);
+  const [dbOptimizing, setDbOptimizing] = useState(false);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -247,6 +248,35 @@ export default function Admin() {
               <p className="text-sm text-gray-400">24h 提交</p>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Database Tools */}
+      {user?.role === 'admin' && (
+        <div className="card p-6 mb-6">
+          <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+            <Activity className="w-5 h-5 text-orange-400" /> 数据库维护
+          </h2>
+          <button
+            onClick={async () => {
+              setDbOptimizing(true);
+              try {
+                const res = await fetch('/api/problems/admin/optimize', {
+                  method: 'POST',
+                  headers: { Authorization: `Bearer ${localStorage.getItem('oj_token')}` },
+                });
+                const data = await res.json();
+                toast.success(data.message || '数据库优化完成');
+              } catch { toast.error('优化失败'); }
+              finally { setDbOptimizing(false); }
+            }}
+            disabled={dbOptimizing}
+            className="btn-secondary text-sm inline-flex items-center gap-2"
+          >
+            {dbOptimizing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Activity size={16} />}
+            {dbOptimizing ? '优化中...' : '优化数据库'}
+          </button>
+          <p className="text-xs text-dark-500 mt-2">执行 ANALYZE + VACUUM，优化查询性能并回收空间</p>
         </div>
       )}
 
