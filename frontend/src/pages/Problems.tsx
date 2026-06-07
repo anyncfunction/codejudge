@@ -73,6 +73,17 @@ export default function Problems() {
   const [userStats, setUserStats] = useState<{ accepted: number } | null>(null);
   const totalProblems = stats?.total ?? 0;
 
+  // Keyboard pagination
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement).tagName)) return;
+      if (e.key === 'ArrowLeft') { updateParams({ page: String(page - 1) }); }
+      if (e.key === 'ArrowRight') { updateParams({ page: String(page + 1) }); }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [page, totalProblems, totalPages]);
+
   const fetchStats = useCallback(async () => {
     try {
       const res = await api.problems.stats();
