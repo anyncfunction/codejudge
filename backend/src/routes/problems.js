@@ -1,8 +1,19 @@
 const router = require('express').Router();
 const { queryOne } = require('../config/db');
 const { listProblems, getProblem, createProblem, updateProblem, deleteProblem, getProblemStats, getAdminStats, getTagsCloud, exportProblems, importProblems, optimizeDatabase } = require('../controllers/problemController');
-const { getTemplate } = require('../services/judgeService');
-const { optionalAuth, adminOnly } = require('../middleware/auth');
+const { getTemplate, runCode } = require('../services/judgeService');
+const { optionalAuth, authenticate, adminOnly } = require('../middleware/auth');
+
+router.post('/run', authenticate, (req, res) => {
+  const { code, language, input } = req.body;
+  if (!code || !language) return res.status(400).json({ error: '缺少代码或语言' });
+  try {
+    const result = runCode(code, language, input || '');
+    res.json(result);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
 
 router.get('/', optionalAuth, listProblems);
 router.get('/stats', getProblemStats);

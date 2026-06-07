@@ -172,4 +172,4 @@ function judgeFillBlank(userAnswer, acceptableAnswers, solution) {
   };
 }
 
-module.exports = { judgeCode, judgeChoice, judgeFillBlank, getTemplate };
+module.exports = { judgeCode, judgeChoice, judgeFillBlank, runCode, getTemplate };

@@ -16,6 +16,7 @@ import {
   ChevronRight,
   RefreshCw,
   Eye,
+  Terminal,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../services/api';
@@ -77,6 +78,10 @@ export default function ProblemDetail() {
   // Hint panel
   const [hintExpanded, setHintExpanded] = useState(true);
   const [showSolution, setShowSolution] = useState(false);
+  const [showCustomTest, setShowCustomTest] = useState(false);
+  const [customInput, setCustomInput] = useState('');
+  const [customOutput, setCustomOutput] = useState<{stdout?: string; stderr?: string; time?: number} | null>(null);
+  const [customRunning, setCustomRunning] = useState(false);
 
   const CODE_SAVE_KEY = `cj_code_${id}_${language}`;
 
@@ -135,6 +140,25 @@ export default function ProblemDetail() {
     }, 1000);
     return () => clearTimeout(timer);
   }, [code, CODE_SAVE_KEY, problem?.type]);
+
+  const handleCustomRun = async () => {
+    setCustomRunning(true);
+    setCustomOutput(null);
+    try {
+      const token = localStorage.getItem('oj_token');
+      const res = await fetch('/api/problems/run', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ code, language, input: customInput }),
+      });
+      const data = await res.json();
+      setCustomOutput(data);
+    } catch {
+      setCustomOutput({ stderr: '运行失败' });
+    } finally {
+      setCustomRunning(false);
+    }
+  };
 
   const handleSubmit = async () => {
     if (!problem) return;
@@ -564,6 +588,45 @@ export default function ProblemDetail() {
                     <pre className="text-emerald-400 text-sm">{problem.test_cases[0].expected_output}</pre>
                   </div>
                 )}
+
+                {/* Custom test */}
+                <div className="mb-3">
+                  <button
+                    onClick={() => setShowCustomTest(!showCustomTest)}
+                    className="flex items-center gap-1 text-xs text-dark-400 hover:text-white transition-colors"
+                  >
+                    <Terminal size={12} />
+                    {showCustomTest ? '收起自定义测试' : '自定义测试'}
+                  </button>
+                  {showCustomTest && (
+                    <div className="mt-2 bg-dark-800/50 rounded-lg border border-dark-700 p-3">
+                      <textarea
+                        value={customInput}
+                        onChange={(e) => setCustomInput(e.target.value)}
+                        placeholder="输入测试数据..."
+                        rows={3}
+                        className="input w-full font-mono text-sm mb-2 resize-y"
+                      />
+                      <div className="flex items-center gap-2">
+                        <button onClick={handleCustomRun} disabled={customRunning} className="btn-secondary text-xs inline-flex items-center gap-1">
+                          {customRunning ? <Loader2 size={12} className="animate-spin" /> : <Play size={12} />}
+                          运行
+                        </button>
+                        <span className="text-xs text-dark-500">按实际运行，不计入提交记录</span>
+                      </div>
+                      {customOutput !== null && (
+                        <div className="mt-2">
+                          <pre className={`text-sm font-mono p-2 rounded ${customOutput.stderr ? 'bg-red-600/10 text-red-400' : 'bg-dark-900 text-green-400'} overflow-auto max-h-32`}>
+                            {customOutput.stdout || customOutput.stderr || '(空输出)'}
+                          </pre>
+                          {customOutput.time != null && (
+                            <p className="text-xs text-dark-500 mt-1">耗时: {customOutput.time}ms</p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
 
                 <CodeEditor
                   code={code}
