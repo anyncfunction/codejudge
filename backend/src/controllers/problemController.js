@@ -26,6 +26,26 @@ function listProblems(req, res) {
   params.push(Number(limit), (Number(page) - 1) * Number(limit));
 
   const problems = queryAll(sql, params);
+
+  // Attach user status
+  if (req.user) {
+    const ids = problems.map(p => p.id);
+    if (ids.length > 0) {
+      const rows = queryAll(
+        `SELECT problem_id, status FROM submissions WHERE user_id = ? AND problem_id IN (${ids.map(() => '?').join(',')}) GROUP BY problem_id`,
+        [req.user.id, ...ids]
+      );
+      const statusMap = {};
+      rows.forEach(r => { statusMap[r.problem_id] = r.status; });
+      problems.forEach(p => {
+        const s = statusMap[p.id];
+        if (s === 'accepted') p.user_status = 'accepted';
+        else if (s) p.user_status = 'attempted';
+        else p.user_status = null;
+      });
+    }
+  }
+
   res.json({ problems, total, page: Number(page), totalPages: Math.ceil(total / Number(limit)) });
 }
 

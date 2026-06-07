@@ -20,6 +20,7 @@ export interface Problem {
   accepted_count: number;
   submission_count: number;
   user_passed?: boolean;
+  user_status?: 'accepted' | 'attempted' | null;
   created_at: string;
 }
 

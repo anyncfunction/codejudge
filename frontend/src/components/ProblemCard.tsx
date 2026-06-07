@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Code2, ListChecks, PenLine, CheckCircle2, Star } from 'lucide-react';
+import { Code2, ListChecks, PenLine, CheckCircle2, Star, AlertCircle } from 'lucide-react';
 import { useBookmarks } from '../context/BookmarkContext';
 import type { Problem } from '../types';
 
@@ -41,18 +41,25 @@ export default function ProblemCard({ problem }: { problem: Problem }) {
   const ratio = problem.submission_count > 0
     ? Math.round((problem.accepted_count / problem.submission_count) * 100)
     : 0;
+  const userStatus = problem.user_status || (problem.user_passed ? 'accepted' : null);
 
   return (
     <Link
       to={`/problems/${problem.id}`}
-      className={`card flex flex-col gap-4 hover:border-primary-500/50 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary-500/5 transition-all duration-200 group${problem.user_passed ? ' border-l-emerald-500' : ''}`}
+      className={`card flex flex-col gap-4 hover:border-primary-500/50 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary-500/5 transition-all duration-150 group${userStatus === 'accepted' ? ' border-l-emerald-500' : userStatus === 'attempted' ? ' border-l-yellow-500' : ''}`}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2.5 min-w-0">
-          {problem.user_passed && (
+          {userStatus === 'accepted' && (
             <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-500/15 text-emerald-400 text-xs rounded-full border border-emerald-500/30 flex-shrink-0">
               <CheckCircle2 className="w-3.5 h-3.5" />
               已通过
+            </span>
+          )}
+          {userStatus === 'attempted' && (
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-yellow-500/15 text-yellow-400 text-xs rounded-full border border-yellow-500/30 flex-shrink-0">
+              <AlertCircle className="w-3.5 h-3.5" />
+              已尝试
             </span>
           )}
           <h3 className="text-lg font-semibold text-white truncate group-hover:text-primary-400 transition-colors">
