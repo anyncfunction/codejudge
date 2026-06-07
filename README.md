@@ -57,16 +57,32 @@ onlinejudge/
 
 ## 快速开始
 
-### 1. 克隆项目
+> ⚠️ **新手体验指南** — 以下教程仅适用于 Windows 10/11 下的快速体验，**请勿在生产环境使用**。如有生产需求，请使用 Linux 服务器部署。
+
+### 🐳 Windows Docker 部署（推荐，零配置）
 
 ```bash
+# 请选择磁盘富余的位置，打开 PowerShell 运行：
+git clone https://github.com/anyncfunction/codejudge.git
+cd codejudge
+docker compose up -d
+```
+
+> 根据网速，首次运行会自动下载依赖镜像，大约 5~30 分钟。
+> 等命令执行完，运行 `docker ps -a`，所有容器状态无 `unhealthy` 即启动成功。
+> 访问 http://localhost:3001
+
+### 💻 本地开发部署
+
+```bash
+# 克隆项目
 git clone https://github.com/anyncfunction/codejudge.git
 cd codejudge
 ```
 
 > 如果网络不稳定，可使用镜像加速：`git clone https://hub.fastgit.xyz/anyncfunction/codejudge.git`
 
-### 2. 安装依赖
+#### 安装依赖
 
 ```bash
 # 后端
@@ -78,7 +94,7 @@ cd ../frontend
 npm install
 ```
 
-### 3. 启动
+#### 启动
 
 ```bash
 # 开发模式（前后端分离，推荐）
@@ -93,18 +109,11 @@ cd backend
 npm start          # 访问 http://localhost:3001
 ```
 
-### 4. 构建前端（可选）
+#### 构建前端（可选）
 
 ```bash
 cd frontend
 npm run build      # 输出到 dist/，后端自动托管
-```
-
-### 5. Docker 部署（推荐）
-
-```bash
-docker compose up -d           # 在项目根目录执行
-# 访问 http://localhost:3001
 ```
 
 ## 预置账户
