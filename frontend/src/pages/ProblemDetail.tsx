@@ -272,15 +272,32 @@ export default function ProblemDetail() {
     const details = submissionResult.details;
 
     return (
-      <div className="card p-6 mt-6">
+      <div className="card p-6 mt-6 relative overflow-hidden">
         {submissionResult.status === 'accepted' && (
-          <div className="mb-4 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-lg flex items-center gap-3">
-            <Sparkles className="w-6 h-6 text-emerald-400" />
-            <div>
-              <p className="text-emerald-400 font-semibold text-lg">🎉 恭喜通过！</p>
-              <p className="text-emerald-500/70 text-sm">太棒了，继续加油！</p>
+          <>
+            <div className="absolute inset-0 pointer-events-none">
+              {Array.from({ length: 20 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="absolute w-2 h-2 rounded-full animate-float-up"
+                  style={{
+                    left: `${10 + Math.random() * 80}%`,
+                    bottom: '-10px',
+                    backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', '#ef4444'][i % 5],
+                    animationDelay: `${i * 0.1}s`,
+                    animationDuration: `${1 + Math.random()}s`,
+                  }}
+                />
+              ))}
             </div>
-          </div>
+            <div className="mb-4 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-lg flex items-center gap-3 relative z-10">
+              <Sparkles className="w-6 h-6 text-emerald-400" />
+              <div>
+                <p className="text-emerald-400 font-semibold text-lg">🎉 恭喜通过！</p>
+                <p className="text-emerald-500/70 text-sm">太棒了，继续加油！</p>
+              </div>
+            </div>
+          </>
         )}
         <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
           判题结果
