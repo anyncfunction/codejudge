@@ -22,6 +22,7 @@ export default function Admin() {
   const [allSubmissions, setAllSubmissions] = useState<any[]>([]);
   const [allLoading, setAllLoading] = useState(false);
   const [dbOptimizing, setDbOptimizing] = useState(false);
+  const [rejudgingId, setRejudgingId] = useState<number | null>(null);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -129,6 +130,24 @@ export default function Admin() {
       setAllSubmissions(data.submissions || []);
     } catch { toast.error('加载失败'); }
     finally { setAllLoading(false); }
+  };
+
+  const handleRejudge = async (id: number) => {
+    setRejudgingId(id);
+    try {
+      const token = localStorage.getItem('oj_token');
+      const res = await fetch(`/api/submissions/admin/rejudge/${id}`, {
+        method: 'POST', headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success(`重新判题完成: ${data.result.status}`);
+        fetchAllSubmissions();
+      } else {
+        toast.error(data.error || '重判失败');
+      }
+    } catch { toast.error('重判失败'); }
+    finally { setRejudgingId(null); }
   };
 
   const TYPE_LABELS: Record<string, string> = {
@@ -452,6 +471,7 @@ export default function Admin() {
                   <th className="text-left py-2 px-3 text-dark-400">题目</th>
                   <th className="text-left py-2 px-3 text-dark-400">状态</th>
                   <th className="text-left py-2 px-3 text-dark-400 hidden md:table-cell">时间</th>
+                  <th className="text-center py-2 px-3 text-dark-400">操作</th>
                 </tr>
               </thead>
               <tbody>
@@ -468,6 +488,14 @@ export default function Admin() {
                       <SubmissionStatus status={s.status} score={s.score} />
                     </td>
                     <td className="py-2 px-3 text-dark-400 hidden md:table-cell text-xs">{s.created_at?.slice(0, 16).replace('T', ' ')}</td>
+                    <td className="py-2 px-3 text-center">
+                      <button
+                        onClick={() => handleRejudge(s.id)}
+                        disabled={rejudgingId === s.id}
+                        className="text-xs text-cyan-400 hover:text-cyan-300 disabled:opacity-50 transition-colors"
+                      >
+                        {rejudgingId === s.id ? <Loader2 className="w-3.5 h-3.5 animate-spin mx-auto" /> : '重判'}
+                      </button>
                   </tr>
                 ))}
               </tbody>
