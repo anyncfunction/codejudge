@@ -19,6 +19,7 @@ import toast from 'react-hot-toast';
 import api from '../services/api';
 import SubmissionStatus from '../components/SubmissionStatus';
 import type { Submission as SubmissionType, PaginatedResponse } from '../types';
+import { formatTimeAgo } from '../utils';
 
 const STATUS_FILTERS = [
   { label: '全部', value: '' },
@@ -261,7 +262,7 @@ export default function Submissions() {
                           </div>
                           <div className="px-4 text-gray-400 flex items-center gap-1">
                             <Clock size={14} />
-                            {formatTime(submission.created_at)}
+                            {formatTimeAgo(submission.created_at)}
                           </div>
                           <div className="px-4 text-right text-gray-400">
                             {expandedId === Number(submission.id) ? (
