@@ -29,10 +29,17 @@ const STATUS_FILTERS = [
   { label: '超时', value: 'time_limit_exceeded' },
 ];
 
+const LANGUAGE_FILTERS = [
+  { label: '全部语言', value: '' },
+  { label: 'JavaScript', value: 'javascript' },
+  { label: 'Python', value: 'python' },
+];
+
 const PAGE_SIZE = 15;
 
 export default function Submissions() {
   const [statusFilter, setStatusFilter] = useState('');
+  const [languageFilter, setLanguageFilter] = useState('');
   const [page, setPage] = useState(1);
   const [data, setData] = useState<PaginatedResponse<SubmissionType> | null>(
     null
@@ -50,6 +57,7 @@ export default function Submissions() {
         limit: PAGE_SIZE,
       };
       if (statusFilter) params.status = statusFilter;
+      if (languageFilter) params.language = languageFilter;
       const res = await api.submissions.list(params);
       setData(res);
     } catch (err: any) {
@@ -59,7 +67,7 @@ export default function Submissions() {
     } finally {
       setLoading(false);
     }
-  }, [page, statusFilter]);
+  }, [page, statusFilter, languageFilter]);
 
   useEffect(() => {
     fetchSubmissions();
@@ -67,6 +75,11 @@ export default function Submissions() {
 
   const handleFilterChange = (value: string) => {
     setStatusFilter(value);
+    setPage(1);
+  };
+
+  const handleLanguageChange = (value: string) => {
+    setLanguageFilter(value);
     setPage(1);
   };
 
@@ -138,7 +151,7 @@ export default function Submissions() {
       </div>
 
       {/* Status filter */}
-      <div className="flex flex-wrap gap-1 mb-6">
+      <div className="flex flex-wrap gap-1 mb-2">
         {STATUS_FILTERS.map((opt) => (
           <button
             key={opt.value}
@@ -146,6 +159,22 @@ export default function Submissions() {
             className={`px-3 py-1.5 rounded-md text-sm transition-colors ${
               statusFilter === opt.value
                 ? 'bg-blue-600 text-white'
+                : 'bg-dark-800 text-gray-300 hover:bg-dark-700'
+            }`}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+      {/* Language filter */}
+      <div className="flex flex-wrap gap-1 mb-6">
+        {LANGUAGE_FILTERS.map((opt) => (
+          <button
+            key={opt.value}
+            onClick={() => handleLanguageChange(opt.value)}
+            className={`px-3 py-1.5 rounded-md text-sm transition-colors ${
+              languageFilter === opt.value
+                ? 'bg-emerald-600 text-white'
                 : 'bg-dark-800 text-gray-300 hover:bg-dark-700'
             }`}
           >

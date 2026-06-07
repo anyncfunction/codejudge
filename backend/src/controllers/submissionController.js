@@ -78,6 +78,7 @@ function listSubmissions(req, res) {
   if (user_id) { const c = ' AND s.user_id = ?'; sql += c; countSql += c; params.push(user_id); }
   else { const c = ' AND s.user_id = ?'; sql += c; countSql += c; params.push(req.user.id); }
   if (status) { const c = ' AND s.status = ?'; sql += c; countSql += c; params.push(status); }
+  if (req.query.language) { const c = ' AND s.language = ?'; sql += c; countSql += c; params.push(req.query.language); }
 
   const total = queryOne(countSql, params).count;
   sql += ' ORDER BY s.created_at DESC LIMIT ? OFFSET ?';
