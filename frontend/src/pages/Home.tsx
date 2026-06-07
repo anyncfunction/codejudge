@@ -51,6 +51,7 @@ export default function Home() {
   const [dailyLoading, setDailyLoading] = useState(true);
   const [recentSubmissions, setRecentSubmissions] = useState<any[]>([]);
   const [submissionsLoading, setSubmissionsLoading] = useState(true);
+  const [popularProblems, setPopularProblems] = useState<Problem[]>([]);
 
   useEffect(() => {
     api.problems.stats().then(setStats).catch(() => {});
@@ -60,6 +61,9 @@ export default function Home() {
         if (res.problems) setRecentProblems(res.problems);
       })
       .catch(() => {});
+    api.problems.list({ limit: 6, sort: 'submissions' }).then(res => {
+      if (res.problems) setPopularProblems(res.problems);
+    }).catch(() => {});
     api.problems
       .getDaily()
       .then((res) => {
@@ -230,6 +234,23 @@ export default function Home() {
                 </Link>
               ))
             )}
+          </div>
+        </section>
+      )}
+
+      {/* Popular Problems */}
+      {popularProblems.length > 0 && (
+        <section className="pb-16">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-bold text-white">热门题目</h2>
+            <Link to="/problems?sort=submissions" className="text-sm text-primary-400 hover:text-primary-300 inline-flex items-center gap-1 transition-colors">
+              查看全部 <ArrowRight size={14} />
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {popularProblems.map((problem) => (
+              <ProblemCard key={problem.id} problem={problem} />
+            ))}
           </div>
         </section>
       )}
