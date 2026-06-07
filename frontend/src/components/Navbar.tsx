@@ -16,10 +16,18 @@ export default function Navbar() {
         e.preventDefault();
         window.location.href = '/problems';
       }
+      if (e.key === 'u' && !['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement).tagName) && user) {
+        e.preventDefault();
+        fetch('/api/problems/random-unsolved', {
+          headers: { Authorization: `Bearer ${localStorage.getItem('oj_token')}` },
+        }).then(r => r.json()).then(data => {
+          if (data.problem) navigate(`/problems/${data.problem.id}`);
+        }).catch(() => {});
+      }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, []);
+  }, [user, navigate]);
 
   const handleRandom = async () => {
     setLoadingRandom(true);
