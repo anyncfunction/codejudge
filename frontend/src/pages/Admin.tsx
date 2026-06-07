@@ -496,6 +496,7 @@ export default function Admin() {
                       >
                         {rejudgingId === s.id ? <Loader2 className="w-3.5 h-3.5 animate-spin mx-auto" /> : '重判'}
                       </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
