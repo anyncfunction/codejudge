@@ -9,7 +9,15 @@ function listProblems(req, res) {
 
   if (type) { conditions += ' AND type = ?'; params.push(type); }
   if (difficulty) { conditions += ' AND difficulty = ?'; params.push(difficulty); }
-  if (search) { conditions += ' AND title LIKE ?'; params.push(`%${search}%`); }
+  if (search) {
+    conditions += ' AND (title LIKE ?';
+    params.push(`%${search}%`);
+    if (/^\d+$/.test(search)) {
+      conditions += ' OR id = ?';
+      params.push(Number(search));
+    }
+    conditions += ')';
+  }
 
   const total = queryOne(countSql + conditions, params).count;
 
