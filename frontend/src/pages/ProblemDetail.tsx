@@ -88,6 +88,7 @@ export default function ProblemDetail() {
   const [similarProblems, setSimilarProblems] = useState<Problem[] | null>(null);
   const [showConfirm, setShowConfirm] = useState(false);
   const [recentSubs, setRecentSubs] = useState<Submission[]>([]);
+  const [sampleCaseIndex, setSampleCaseIndex] = useState(0);
 
   const CODE_SAVE_KEY = `cj_code_${id}_${language}`;
 
@@ -131,6 +132,7 @@ export default function ProblemDetail() {
     setSubmissionResult(null);
     setSelectedAnswer(null);
     setFillAnswer('');
+    setSampleCaseIndex(0);
   }, [fetchProblem]);
 
   useEffect(() => {
@@ -624,10 +626,23 @@ export default function ProblemDetail() {
                 {/* Sample test case */}
                 {problem.test_cases && problem.test_cases.length > 0 && (
                   <div className="mb-3 p-3 bg-dark-800/50 rounded-lg border border-dark-700">
+                    {problem.test_cases.length > 1 && (
+                      <div className="flex gap-1 mb-3">
+                        {problem.test_cases.map((_, i) => (
+                          <button
+                            key={i}
+                            onClick={() => setSampleCaseIndex(i)}
+                            className={`px-2 py-0.5 rounded text-xs transition-colors ${sampleCaseIndex === i ? 'bg-dark-600 text-white' : 'bg-dark-700/50 text-dark-400 hover:text-white'}`}
+                          >
+                            示例 {i + 1}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                     <p className="text-dark-400 text-xs mb-2">示例输入:</p>
-                    <pre className="text-dark-300 text-sm">{problem.test_cases[0].input}</pre>
+                    <pre className="text-dark-300 text-sm">{problem.test_cases[sampleCaseIndex].input}</pre>
                     <p className="text-dark-400 text-xs mb-1 mt-2">示例输出:</p>
-                    <pre className="text-emerald-400 text-sm">{problem.test_cases[0].expected_output}</pre>
+                    <pre className="text-emerald-400 text-sm">{problem.test_cases[sampleCaseIndex].expected_output}</pre>
                   </div>
                 )}
 
