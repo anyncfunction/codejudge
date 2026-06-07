@@ -168,6 +168,13 @@ export default function Problems() {
     updateParams({ search: searchInput, page: '' });
   };
 
+  // Debounced auto-search
+  useEffect(() => {
+    if (searchInput === search) return;
+    const timer = setTimeout(() => handleSearch(), 500);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
   const handleSearchKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') handleSearch();
   };
