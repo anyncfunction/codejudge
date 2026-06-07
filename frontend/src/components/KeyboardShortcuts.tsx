@@ -3,7 +3,9 @@ import { Keyboard, X } from 'lucide-react';
 
 const SHORTCUTS = [
   { keys: '/', desc: '跳转到搜索 / 题库' },
+  { keys: 'Ctrl+K', desc: '全局搜索题目' },
   { keys: 'Ctrl+Enter', desc: '提交答案' },
+  { keys: 'U', desc: '随机未做题' },
   { keys: '?', desc: '打开快捷键帮助' },
 ];
 
