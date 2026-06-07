@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { User, Mail, Shield, Award, TrendingUp, Loader2, AlertTriangle, CheckCircle2, XCircle, Clock, Zap, Lock, Key, CalendarDays, Code, PieChart, Trash2, Trophy, LogIn } from 'lucide-react';
+import { User, Mail, Shield, Award, TrendingUp, Loader2, AlertTriangle, CheckCircle2, XCircle, Clock, Zap, Lock, Key, CalendarDays, Code, PieChart, Trash2, Trophy, LogIn, Flame } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import toast from 'react-hot-toast';
@@ -339,6 +339,30 @@ export default function Profile() {
           </div>
         </div>
       )}
+
+      {/* Achievements */}
+      <div className="card p-6">
+        <h3 className="text-sm font-semibold text-dark-200 mb-3 flex items-center gap-2">
+          <Trophy className="w-4 h-4 text-amber-400" /> 成就
+        </h3>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {[
+            { icon: Zap, label: '初次通过', earned: stats.accepted > 0, color: 'text-blue-400', bg: 'bg-blue-500/10' },
+            { icon: Trophy, label: '10题通过', earned: stats.accepted >= 10, color: 'text-amber-400', bg: 'bg-amber-500/10' },
+            { icon: Trophy, label: '50题通过', earned: stats.accepted >= 50, color: 'text-purple-400', bg: 'bg-purple-500/10' },
+            { icon: Award, label: '100题通过', earned: stats.accepted >= 100, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+            { icon: Flame, label: '连续7天', earned: streak >= 7, color: 'text-orange-400', bg: 'bg-orange-500/10' },
+            { icon: Flame, label: '连续30天', earned: streak >= 30, color: 'text-red-400', bg: 'bg-red-500/10' },
+            { icon: TrendingUp, label: '通过率>80%', earned: acceptanceRate >= 80 && stats.total >= 10, color: 'text-cyan-400', bg: 'bg-cyan-500/10' },
+            { icon: Code, label: `#${stats.accepted}题`, earned: true, color: 'text-dark-400', bg: 'bg-dark-700/50' },
+          ].map((a) => (
+            <div key={a.label} className={`flex flex-col items-center gap-1.5 p-3 rounded-lg border ${a.earned ? `${a.bg} border-${a.color.replace('text-', '')}/20` : 'bg-dark-800/30 border-dark-700/50 opacity-40'}`}>
+              <a.icon className={`w-6 h-6 ${a.earned ? a.color : 'text-dark-600'}`} />
+              <span className={`text-[10px] font-medium ${a.earned ? 'text-dark-200' : 'text-dark-600'}`}>{a.label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
 
       <DailyGoal />
       <GamificationSection />
