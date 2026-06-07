@@ -406,6 +406,12 @@ export default function Admin() {
                   <td className="py-2 px-3 text-center">
                     {u.role !== 'admin' && (
                       <div className="flex items-center justify-center gap-1">
+                        <Link
+                          to={`/submissions?user_id=${u.id}`}
+                          className="text-[10px] px-2 py-0.5 rounded bg-dark-700 text-dark-400 hover:text-white transition-colors"
+                        >
+                          提交
+                        </Link>
                         <button
                           onClick={async () => {
                             try {
