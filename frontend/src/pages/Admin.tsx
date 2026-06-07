@@ -232,7 +232,7 @@ export default function Admin() {
 
       {/* Admin Analytics */}
       {adminStats && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-8">
           <div className="card p-5 flex items-center gap-4">
             <div className="p-3 bg-indigo-600/20 rounded-lg">
               <Users size={24} className="text-indigo-400" />
@@ -270,6 +270,15 @@ export default function Admin() {
             <div>
               <p className="text-2xl font-bold text-white">{adminStats.recent24h}</p>
               <p className="text-sm text-gray-400">24h 提交</p>
+            </div>
+          </div>
+          <div className="card p-5 flex items-center gap-4">
+            <div className="p-3 bg-pink-600/20 rounded-lg">
+              <Code size={24} className="text-pink-400" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-white">{adminStats.byType?.programming || 0}</p>
+              <p className="text-sm text-gray-400">编程题</p>
             </div>
           </div>
         </div>
