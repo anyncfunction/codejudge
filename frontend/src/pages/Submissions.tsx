@@ -40,6 +40,7 @@ const PAGE_SIZE = 15;
 export default function Submissions() {
   const [statusFilter, setStatusFilter] = useState('');
   const [languageFilter, setLanguageFilter] = useState('');
+  const [problemIdFilter, setProblemIdFilter] = useState('');
   const [page, setPage] = useState(1);
   const [data, setData] = useState<PaginatedResponse<SubmissionType> | null>(
     null
@@ -58,6 +59,7 @@ export default function Submissions() {
       };
       if (statusFilter) params.status = statusFilter;
       if (languageFilter) params.language = languageFilter;
+      if (problemIdFilter) params.problem_id = Number(problemIdFilter);
       const res = await api.submissions.list(params);
       setData(res);
     } catch (err: any) {
@@ -67,7 +69,7 @@ export default function Submissions() {
     } finally {
       setLoading(false);
     }
-  }, [page, statusFilter, languageFilter]);
+  }, [page, statusFilter, languageFilter, problemIdFilter]);
 
   useEffect(() => {
     fetchSubmissions();
@@ -148,6 +150,21 @@ export default function Submissions() {
           <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
           刷新
         </button>
+      </div>
+
+      {/* Problem ID filter */}
+      <div className="flex gap-2 mb-4">
+        <input
+          type="number"
+          min="1"
+          value={problemIdFilter}
+          onChange={e => {
+            setProblemIdFilter(e.target.value);
+            setPage(1);
+          }}
+          placeholder="按题目ID筛选..."
+          className="input w-40 text-sm"
+        />
       </div>
 
       {/* Status filter */}
