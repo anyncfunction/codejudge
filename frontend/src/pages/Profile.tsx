@@ -56,6 +56,8 @@ export default function Profile() {
   const [languageStats, setLanguageStats] = useState<{language: string; count: number}[]>([]);
   const [submissionStatus, setSubmissionStatus] = useState<any[]>([]);
   const [difficultyStats, setDifficultyStats] = useState<{difficulty: string; count: number}[]>([]);
+  const [bio, setBio] = useState(localStorage.getItem('oj_bio') || '');
+  const [editingBio, setEditingBio] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('oj_token');
@@ -213,6 +215,39 @@ export default function Profile() {
               )}
             </div>
           </div>
+        </div>
+        <div className="mt-4">
+          {editingBio ? (
+            <div className="flex gap-2">
+              <input
+                value={bio}
+                onChange={e => setBio(e.target.value)}
+                placeholder="写一句话介绍自己..."
+                className="input flex-1 text-sm"
+                autoFocus
+                onKeyDown={e => {
+                  if (e.key === 'Enter') {
+                    localStorage.setItem('oj_bio', bio);
+                    setEditingBio(false);
+                    toast.success('简介已更新');
+                  }
+                }}
+              />
+              <button onClick={() => {
+                localStorage.setItem('oj_bio', bio);
+                setEditingBio(false);
+                toast.success('简介已更新');
+              }} className="btn-primary text-xs px-3">保存</button>
+              <button onClick={() => { setBio(localStorage.getItem('oj_bio') || ''); setEditingBio(false); }} className="btn-secondary text-xs px-3">取消</button>
+            </div>
+          ) : bio ? (
+            <p className="text-dark-300 text-sm flex items-center gap-2">
+              <span>{bio}</span>
+              <button onClick={() => setEditingBio(true)} className="text-[10px] text-dark-500 hover:text-white transition-colors">编辑</button>
+            </p>
+          ) : (
+            <button onClick={() => setEditingBio(true)} className="text-sm text-dark-500 hover:text-white transition-colors">+ 添加个人简介</button>
+          )}
         </div>
       </div>
 
