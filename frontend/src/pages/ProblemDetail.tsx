@@ -293,8 +293,11 @@ export default function ProblemDetail() {
             <div className="mb-4 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-lg flex items-center gap-3 relative z-10">
               <Sparkles className="w-6 h-6 text-emerald-400" />
               <div>
-                <p className="text-emerald-400 font-semibold text-lg">🎉 恭喜通过！</p>
-                <p className="text-emerald-500/70 text-sm">太棒了，继续加油！</p>
+      <p className="text-emerald-400 font-semibold text-lg">🎉 恭喜通过！</p>
+              <p className="text-emerald-500/70 text-sm">太棒了，继续加油！</p>
+              <Link to={`/submissions?problem_id=${problem.id}`} className="text-[10px] text-emerald-400/60 hover:text-emerald-400 ml-auto transition-colors">
+                查看提交
+              </Link>
               </div>
             </div>
           </>
