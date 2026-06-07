@@ -65,7 +65,7 @@ const api = {
   submissions: {
     submit: (body: { problem_id: number; code?: string; language?: string; answer?: string | number }) =>
       request<import('../types').Submission>('/submissions', { method: 'POST', body: JSON.stringify(body) }),
-    list: (params?: { problem_id?: number; status?: string; page?: number }) => {
+    list: (params?: { problem_id?: number; status?: string; page?: number; limit?: number }) => {
       const q = new URLSearchParams();
       if (params) Object.entries(params).forEach(([k, v]) => { if (v !== undefined) q.set(k, String(v)); });
       return request<import('../types').PaginatedResponse<import('../types').Submission>>(`/submissions?${q}`);

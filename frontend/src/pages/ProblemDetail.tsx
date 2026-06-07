@@ -86,6 +86,7 @@ export default function ProblemDetail() {
   const [customRunning, setCustomRunning] = useState(false);
   const [similarProblems, setSimilarProblems] = useState<Problem[] | null>(null);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [recentSubs, setRecentSubs] = useState<Submission[]>([]);
 
   const CODE_SAVE_KEY = `cj_code_${id}_${language}`;
 
@@ -144,6 +145,12 @@ export default function ProblemDetail() {
       setSimilarProblems([]);
     }
   }, [problem?.id, problem?.tags]);
+
+  useEffect(() => {
+    if (problem?.id) {
+      api.submissions.list({ problem_id: problem.id, limit: 3 }).then(res => setRecentSubs(res.submissions || [])).catch(() => {});
+    }
+  }, [problem?.id]);
 
   useEffect(() => {
     if (!code || problem?.type !== 'programming') return;
@@ -732,6 +739,21 @@ export default function ProblemDetail() {
                       } hover:opacity-80`}
                     >
                       #{p.id} {p.title}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Recent submissions */}
+            {recentSubs.length > 0 && (
+              <div className="card p-4 mt-4">
+                <h3 className="text-sm font-semibold text-dark-200 mb-3">我的提交记录</h3>
+                <div className="space-y-1.5">
+                  {recentSubs.map(s => (
+                    <Link key={s.id} to={`/submissions`} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-dark-700/50 transition-colors text-xs">
+                      <SubmissionStatus status={s.status} score={s.score} />
+                      <span className="text-dark-400">{s.created_at?.slice(0, 16).replace('T', ' ')}</span>
                     </Link>
                   ))}
                 </div>
