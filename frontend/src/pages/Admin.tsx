@@ -323,7 +323,7 @@ export default function Admin() {
           <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
             <Activity className="w-5 h-5 text-green-400" /> 系统状态
           </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
             <div>
               <p className="text-xs text-dark-500">运行时间</p>
               <p className="text-sm text-white font-mono">{systemInfo.uptime || '-'}</p>
@@ -340,8 +340,12 @@ export default function Admin() {
               </p>
             </div>
             <div>
-              <p className="text-xs text-dark-500">数据库</p>
-              <p className="text-sm text-white font-mono">SQLite</p>
+              <p className="text-xs text-dark-500">今日提交</p>
+              <p className="text-sm text-white font-mono">{systemInfo.submissions_today ?? '-'}</p>
+            </div>
+            <div>
+              <p className="text-xs text-dark-500">今日活跃</p>
+              <p className="text-sm text-white font-mono">{systemInfo.active_users_today ?? '-'} 人</p>
             </div>
           </div>
         </div>

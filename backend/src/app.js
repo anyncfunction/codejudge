@@ -49,12 +49,14 @@ app.get('/api/health', (req, res) => {
   const minutes = Math.floor((uptime % 3600) / 60);
   const today = new Date().toISOString().slice(0, 10);
   const submissionsToday = queryOne("SELECT COUNT(*) as count FROM submissions WHERE DATE(created_at) = ?", [today]).count;
+  const activeUsersToday = queryOne("SELECT COUNT(DISTINCT user_id) as count FROM submissions WHERE DATE(created_at) = ?", [today]).count;
   res.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
     uptime: `${hours}h ${minutes}m`,
     version: '1.0.0',
     submissions_today: submissionsToday,
+    active_users_today: activeUsersToday,
   });
 });
 
