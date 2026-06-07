@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -49,6 +49,15 @@ export default function AdminProblemForm() {
   const [difficulty, setDifficulty] = useState<string>('easy');
   const [tagsInput, setTagsInput] = useState('');
   const [tags, setTags] = useState<string[]>([]);
+  const [showTagSuggestions, setShowTagSuggestions] = useState(false);
+  const tagInputRef = useRef<HTMLInputElement>(null);
+
+  const COMMON_TAGS = [
+    '数组','字符串','数学','排序','搜索','动态规划','贪心','递归','二分','哈希表',
+    '链表','栈','队列','树','图','前缀和','双指针','滑动窗口','位运算','回溯',
+    'JavaScript','Python','C++','数据库','SQL','网络','HTTP','前端','React',
+    '基础','模拟','枚举','构造','交互','分治','数论','几何',
+  ];
 
   // Programming
   const [testCases, setTestCases] = useState<TestCase[]>([
@@ -119,6 +128,22 @@ export default function AdminProblemForm() {
       .map((t) => t.trim())
       .filter(Boolean);
     setTags(parsed);
+  };
+
+  const addTag = (tag: string) => {
+    if (!tags.includes(tag)) {
+      const newTags = [...tags, tag];
+      setTags(newTags);
+      setTagsInput(newTags.join(', '));
+    }
+    setShowTagSuggestions(false);
+    tagInputRef.current?.focus();
+  };
+
+  const removeTag = (tag: string) => {
+    const newTags = tags.filter(t => t !== tag);
+    setTags(newTags);
+    setTagsInput(newTags.join(', '));
   };
 
   /* ---- Test Cases ---- */
@@ -367,23 +392,45 @@ export default function AdminProblemForm() {
         {/* Tags */}
         <div>
           <label className="block text-sm text-gray-400 mb-1">
-            标签（逗号分隔）
+            标签
           </label>
-          <input
-            type="text"
-            value={tagsInput}
-            onChange={(e) => handleTagsChange(e.target.value)}
-            placeholder="如：数组, 排序, 动态规划"
-            className="input w-full"
-          />
+          <div className="relative">
+            <input
+              ref={tagInputRef}
+              type="text"
+              value={tagsInput}
+              onChange={(e) => handleTagsChange(e.target.value)}
+              onFocus={() => setShowTagSuggestions(true)}
+              onBlur={() => setTimeout(() => setShowTagSuggestions(false), 200)}
+              placeholder="输入标签，逗号分隔"
+              className="input w-full"
+            />
+            {showTagSuggestions && (
+              <div className="absolute z-10 top-full mt-1 left-0 right-0 bg-dark-800 border border-dark-700 rounded-lg p-2 max-h-48 overflow-y-auto shadow-xl">
+                <div className="flex flex-wrap gap-1">
+                  {COMMON_TAGS.filter(t => !tags.includes(t)).map(tag => (
+                    <button
+                      key={tag}
+                      type="button"
+                      onMouseDown={(e) => { e.preventDefault(); addTag(tag); }}
+                      className="px-2 py-1 text-xs rounded bg-dark-700 text-gray-300 hover:bg-dark-600 hover:text-white transition-colors"
+                    >
+                      + {tag}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
           {tags.length > 0 && (
-            <div className="flex flex-wrap gap-1 mt-2">
+            <div className="flex flex-wrap gap-1.5 mt-2">
               {tags.map((tag) => (
                 <span
                   key={tag}
-                  className="px-2 py-0.5 bg-dark-800 text-gray-400 text-xs rounded"
+                  className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-600/20 text-blue-400 text-xs rounded"
                 >
                   {tag}
+                  <button type="button" onClick={() => removeTag(tag)} className="hover:text-white transition-colors">&times;</button>
                 </span>
               ))}
             </div>

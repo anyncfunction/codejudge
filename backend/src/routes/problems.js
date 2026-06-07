@@ -3,6 +3,7 @@ const { queryOne } = require('../config/db');
 const { listProblems, getProblem, createProblem, updateProblem, deleteProblem, getProblemStats, getAdminStats, getTagsCloud, exportProblems, importProblems, optimizeDatabase, getSimilarProblems, getRandomUnsolved } = require('../controllers/problemController');
 const { getTemplate, runCode } = require('../services/judgeService');
 const { optionalAuth, authenticate, adminOnly } = require('../middleware/auth');
+const { validate, validateProblem } = require('../middleware/validate');
 
 router.post('/run', authenticate, (req, res) => {
   const { code, language, input } = req.body;
@@ -87,6 +88,8 @@ router.get('/docs', (req, res) => {
     ],
   });
 });
+router.post('/', authenticate, adminOnly, validate(validateProblem), createProblem);
+router.put('/:id', authenticate, adminOnly, validate(validateProblem), updateProblem);
 router.get('/:id', optionalAuth, getProblem);
 
 module.exports = router;

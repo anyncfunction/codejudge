@@ -2,9 +2,10 @@ const router = require('express').Router();
 const { register, login, getProfile, changePassword } = require('../controllers/authController');
 const { authenticate } = require('../middleware/auth');
 const { queryAll, run } = require('../config/db');
+const { validate, validateRegister, validateLogin } = require('../middleware/validate');
 
-router.post('/register', register);
-router.post('/login', login);
+router.post('/register', validate(validateRegister), register);
+router.post('/login', validate(validateLogin), login);
 router.get('/profile', authenticate, getProfile);
 router.put('/password', authenticate, changePassword);
 router.delete('/profile', authenticate, (req, res) => {

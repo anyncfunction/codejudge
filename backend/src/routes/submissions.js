@@ -2,9 +2,10 @@ const router = require('express').Router();
 const { submit, listSubmissions, getSubmission } = require('../controllers/submissionController');
 const { authenticate, adminOnly } = require('../middleware/auth');
 const { queryAll, queryOne, run } = require('../config/db');
+const { validate, validateSubmission } = require('../middleware/validate');
 const { judgeCode, judgeChoice, judgeFillBlank } = require('../services/judgeService');
 
-router.post('/', authenticate, submit);
+router.post('/', authenticate, validate(validateSubmission), submit);
 router.get('/', authenticate, listSubmissions);
 router.get('/admin/all', authenticate, adminOnly, (req, res) => {
   const { page = 1, limit = 20 } = req.query;
