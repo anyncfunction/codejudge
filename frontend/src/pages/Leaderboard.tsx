@@ -3,6 +3,7 @@ import { Trophy, Medal, User as UserIcon, Zap, BarChart3 } from 'lucide-react';
 import api from '../services/api';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { useAuth } from '../context/AuthContext';
+import { TableSkeleton } from '../components/Skeleton';
 
 interface LeaderboardEntry {
   rank: number;
@@ -41,13 +42,7 @@ export default function Leaderboard() {
       </div>
 
       {loading ? (
-        <div className="space-y-3">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="card p-4 animate-pulse">
-              <div className="h-5 bg-dark-700 rounded w-1/3" />
-            </div>
-          ))}
-        </div>
+        <TableSkeleton rows={8} />
       ) : error ? (
         <div className="card p-10 text-center">
           <BarChart3 className="w-10 h-10 text-dark-500 mx-auto mb-3" />

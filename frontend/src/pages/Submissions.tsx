@@ -20,6 +20,7 @@ import api from '../services/api';
 import SubmissionStatus from '../components/SubmissionStatus';
 import type { Submission as SubmissionType, PaginatedResponse } from '../types';
 import { formatTimeAgo } from '../utils';
+import { TableSkeleton } from '../components/Skeleton';
 
 const STATUS_FILTERS = [
   { label: '全部', value: '' },
@@ -237,13 +238,7 @@ export default function Submissions() {
 
       {/* Content */}
       {loading ? (
-        <div className="space-y-3">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="card p-5 animate-pulse">
-              <div className="h-5 bg-dark-700 rounded w-full" />
-            </div>
-          ))}
-        </div>
+        <TableSkeleton rows={5} />
       ) : error ? (
         <div className="card p-10 text-center">
           <AlertCircle size={40} className="mx-auto text-red-400 mb-3" />
