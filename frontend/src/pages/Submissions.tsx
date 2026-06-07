@@ -302,6 +302,12 @@ export default function Submissions() {
                           </div>
                           <div className="px-4 text-gray-300">
                             {submission.score}
+                            {submission.time_ms != null && (
+                              <span className="text-xs text-dark-500 ml-2">{submission.time_ms}ms</span>
+                            )}
+                            {submission.memory_kb != null && (
+                              <span className="text-xs text-dark-500 ml-1">{(submission.memory_kb / 1024).toFixed(1)}MB</span>
+                            )}
                           </div>
                           <div className="px-4 text-gray-400">
                             {submission.language || '-'}
