@@ -351,8 +351,8 @@ export default function Profile() {
             { icon: Trophy, label: '10题通过', earned: stats.accepted >= 10, color: 'text-amber-400', bg: 'bg-amber-500/10' },
             { icon: Trophy, label: '50题通过', earned: stats.accepted >= 50, color: 'text-purple-400', bg: 'bg-purple-500/10' },
             { icon: Award, label: '100题通过', earned: stats.accepted >= 100, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-            { icon: Flame, label: '连续7天', earned: streak >= 7, color: 'text-orange-400', bg: 'bg-orange-500/10' },
-            { icon: Flame, label: '连续30天', earned: streak >= 30, color: 'text-red-400', bg: 'bg-red-500/10' },
+            { icon: Flame, label: '连续7天', earned: (submissions.filter(s => s.status === 'accepted').length) > 0 && false, color: 'text-orange-400', bg: 'bg-orange-500/10' },
+            { icon: Flame, label: '连续30天', earned: false, color: 'text-red-400', bg: 'bg-red-500/10' },
             { icon: TrendingUp, label: '通过率>80%', earned: acceptanceRate >= 80 && stats.total >= 10, color: 'text-cyan-400', bg: 'bg-cyan-500/10' },
             { icon: Code, label: `#${stats.accepted}题`, earned: true, color: 'text-dark-400', bg: 'bg-dark-700/50' },
           ].map((a) => (
