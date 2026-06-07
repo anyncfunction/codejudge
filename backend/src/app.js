@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const { initDb } = require('./utils/initDb');
+const { queryOne } = require('./config/db');
 const { rateLimit } = require('./middleware/rateLimit');
 const authRoutes = require('./routes/auth');
 const problemRoutes = require('./routes/problems');
@@ -46,11 +47,14 @@ app.get('/api/health', (req, res) => {
   const uptime = Math.floor((Date.now() - serverStart) / 1000);
   const hours = Math.floor(uptime / 3600);
   const minutes = Math.floor((uptime % 3600) / 60);
+  const today = new Date().toISOString().slice(0, 10);
+  const submissionsToday = queryOne("SELECT COUNT(*) as count FROM submissions WHERE DATE(created_at) = ?", [today]).count;
   res.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
     uptime: `${hours}h ${minutes}m`,
     version: '1.0.0',
+    submissions_today: submissionsToday,
   });
 });
 

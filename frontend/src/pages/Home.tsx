@@ -52,6 +52,7 @@ export default function Home() {
   const [recentSubmissions, setRecentSubmissions] = useState<any[]>([]);
   const [submissionsLoading, setSubmissionsLoading] = useState(true);
   const [popularProblems, setPopularProblems] = useState<Problem[]>([]);
+  const [todayCount, setTodayCount] = useState(0);
 
   useEffect(() => {
     api.problems.stats().then(setStats).catch(() => {});
@@ -64,6 +65,7 @@ export default function Home() {
     api.problems.list({ limit: 6, sort: 'submissions' }).then(res => {
       if (res.problems) setPopularProblems(res.problems);
     }).catch(() => {});
+    fetch('/api/health').then(r => r.json()).then(h => setTodayCount(h.submissions_today ?? 0)).catch(() => {});
     api.problems
       .getDaily()
       .then((res) => {
@@ -110,6 +112,7 @@ export default function Home() {
         {user && (
           <p className="mt-4 text-green-400 text-sm">
             欢迎回来，{user.username}
+            {todayCount > 0 && <span className="ml-3 text-dark-400">今日提交: <span className="text-blue-400 font-semibold">{todayCount}</span></span>}
           </p>
         )}
 
