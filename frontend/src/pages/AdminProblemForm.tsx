@@ -412,6 +412,7 @@ export default function AdminProblemForm() {
             <div className="space-y-3">
               {testCases.map((tc, index) => (
                 <div key={index} className="card p-4 relative">
+                  <div className="absolute top-2 left-3 text-xs text-dark-500 font-mono">#{index + 1}</div>
                   {testCases.length > 1 && (
                     <button
                       type="button"

@@ -25,7 +25,7 @@ function register(req, res) {
 }
 
 function login(req, res) {
-  const { email, password } = req.body;
+  const { email, password, rememberMe } = req.body;
   if (!email || !password) {
     return res.status(400).json({ error: '请输入邮箱和密码' });
   }
@@ -35,7 +35,8 @@ function login(req, res) {
   }
   // Update last login
   run('UPDATE users SET last_login = datetime() WHERE id = ?', [user.id]);
-  const token = jwt.sign({ id: user.id, username: user.username, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: '7d' });
+  const expiresIn = rememberMe ? '30d' : '7d';
+  const token = jwt.sign({ id: user.id, username: user.username, email: user.email, role: user.role }, JWT_SECRET, { expiresIn });
   res.json({
     token,
     user: { id: user.id, username: user.username, email: user.email, role: user.role, last_login: new Date().toISOString() },

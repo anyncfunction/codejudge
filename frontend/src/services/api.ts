@@ -31,7 +31,7 @@ const api = {
   auth: {
     register: (body: { username: string; email: string; password: string }) =>
       request<{ token: string; user: import('../types').User }>('/auth/register', { method: 'POST', body: JSON.stringify(body) }),
-    login: (body: { email: string; password: string }) =>
+    login: (body: { email: string; password: string; rememberMe?: boolean }) =>
       request<{ token: string; user: import('../types').User }>('/auth/login', { method: 'POST', body: JSON.stringify(body) }),
     profile: () => request<import('../types').User>('/auth/profile'),
     leaderboard: () => request<any[]>('/auth/leaderboard'),

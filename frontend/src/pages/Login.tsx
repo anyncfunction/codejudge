@@ -10,6 +10,7 @@ export default function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -26,7 +27,7 @@ export default function Login() {
     }
     setSubmitting(true);
     try {
-      const res = await api.auth.login({ email: email.trim(), password });
+      const res = await api.auth.login({ email: email.trim(), password, rememberMe });
       login(res.token, res.user);
       toast.success('登录成功');
       navigate('/', { replace: true });
@@ -83,6 +84,16 @@ export default function Login() {
               />
             </div>
           </div>
+
+          <label className="flex items-center gap-2 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+              className="w-4 h-4 rounded border-dark-600 bg-dark-800 text-primary-500 focus:ring-primary-500/30"
+            />
+            <span className="text-sm text-dark-400">记住我（30天有效）</span>
+          </label>
 
           <button
             type="submit"
