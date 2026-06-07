@@ -301,6 +301,7 @@ export default function Submissions() {
                             />
                           </div>
                           <div className="px-4 text-gray-300">
+                            <span className="text-xs text-dark-500 mr-1">#{submission.id}</span>
                             {submission.score}
                             {submission.time_ms != null && (
                               <span className="text-xs text-dark-500 ml-2">{submission.time_ms}ms</span>
