@@ -111,6 +111,9 @@ export default function ProblemCard({ problem }: { problem: Problem }) {
         </div>
         <span className="text-xs text-dark-400 whitespace-nowrap">
           {problem.accepted_count}/{problem.submission_count} · {ratio}%
+          {problem.view_count != null && (
+            <span className="ml-2 text-dark-500">· 👁 {problem.view_count}</span>
+          )}
         </span>
       </div>
     </Link>
