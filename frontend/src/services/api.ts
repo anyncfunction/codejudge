@@ -43,7 +43,7 @@ const api = {
   },
 
   problems: {
-    list: (params?: { type?: string; difficulty?: string; search?: string; page?: number; limit?: number }) => {
+    list: (params?: { type?: string; difficulty?: string; search?: string; page?: number; limit?: number; sort?: string; untried?: string }) => {
       const q = new URLSearchParams();
       if (params) Object.entries(params).forEach(([k, v]) => { if (v !== undefined) q.set(k, String(v)); });
       return request<import('../types').PaginatedResponse<import('../types').Problem>>(`/problems?${q}`);
