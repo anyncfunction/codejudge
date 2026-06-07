@@ -6,6 +6,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 import KeyboardShortcuts from './components/KeyboardShortcuts';
 import TutorialOverlay from './components/TutorialOverlay';
 import BackToTop from './components/BackToTop';
+import QuickSearch from './components/QuickSearch';
 
 const Home = lazy(() => import('./pages/Home'));
 const Login = lazy(() => import('./pages/Login'));
@@ -55,6 +56,7 @@ export default function App() {
         <KeyboardShortcuts />
         <TutorialOverlay />
         <BackToTop />
+        <QuickSearch />
       </div>
   );
 }
