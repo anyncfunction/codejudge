@@ -49,6 +49,16 @@ router.get('/language-stats', authenticate, (req, res) => {
   res.json({ languages: stats });
 });
 
+router.get('/difficulty-stats', authenticate, (req, res) => {
+  const stats = queryAll(`
+    SELECT p.difficulty, COUNT(*) as count
+    FROM submissions s JOIN problems p ON p.id = s.problem_id
+    WHERE s.user_id = ? AND s.status = 'accepted'
+    GROUP BY p.difficulty
+  `, [req.user.id]);
+  res.json({ difficulties: stats });
+});
+
 router.get('/recent-submissions', authenticate, (req, res) => {
   const rows = queryAll(`
     SELECT s.id, s.problem_id, s.status, s.score, s.created_at, p.title as problem_title

@@ -37,6 +37,7 @@ const api = {
     leaderboard: () => request<any[]>('/auth/leaderboard'),
     changePassword: (body: { currentPassword: string; newPassword: string }) =>
       request<{ message: string }>('/auth/password', { method: 'PUT', body: JSON.stringify(body) }),
+    difficultyStats: () => request<{ difficulties: { difficulty: string; count: number }[] }>('/auth/difficulty-stats'),
     recentSubmissions: () => request<{ submissions: any[] }>('/auth/recent-submissions'),
     deleteAccount: () => request<{ message: string }>('/auth/profile', { method: 'DELETE' }),
   },

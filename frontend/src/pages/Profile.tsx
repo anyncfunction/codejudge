@@ -55,6 +55,7 @@ export default function Profile() {
   const [calendarDates, setCalendarDates] = useState<Set<string>>(new Set());
   const [languageStats, setLanguageStats] = useState<{language: string; count: number}[]>([]);
   const [submissionStatus, setSubmissionStatus] = useState<any[]>([]);
+  const [difficultyStats, setDifficultyStats] = useState<{difficulty: string; count: number}[]>([]);
 
   useEffect(() => {
     const token = localStorage.getItem('oj_token');
@@ -80,6 +81,7 @@ export default function Profile() {
         setSubmissionStatus(Object.entries(statusCount).map(([status, count]) => ({ status, count })));
       })
       .catch(() => {});
+    api.auth.difficultyStats().then(res => setDifficultyStats(res.difficulties || [])).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -252,6 +254,34 @@ export default function Profile() {
                     />
                   </div>
                   <span className="text-xs text-dark-400 w-8">{lang.count}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Difficulty distribution */}
+      {difficultyStats.length > 0 && (
+        <div className="card p-6">
+          <h3 className="text-sm font-semibold text-dark-200 mb-3 flex items-center gap-2">
+            <Zap className="w-4 h-4 text-amber-400" /> 通过题目难度分布
+          </h3>
+          <div className="space-y-2">
+            {['easy', 'medium', 'hard'].map(d => {
+              const item = difficultyStats.find(s => s.difficulty === d);
+              const count = item?.count || 0;
+              const total = difficultyStats.reduce((a, b) => a + b.count, 0);
+              const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+              const colorMap: Record<string, string> = { easy: 'bg-green-500', medium: 'bg-yellow-500', hard: 'bg-red-500' };
+              const labelMap: Record<string, string> = { easy: '简单', medium: '中等', hard: '困难' };
+              return (
+                <div key={d} className="flex items-center gap-3">
+                  <span className="w-12 text-xs text-dark-400 text-right">{labelMap[d]}</span>
+                  <div className="flex-1 h-4 bg-dark-700 rounded-full overflow-hidden">
+                    <div className={`h-full ${colorMap[d]} rounded-full transition-all duration-500`} style={{ width: `${pct}%` }} />
+                  </div>
+                  <span className="text-xs text-dark-400 w-16 text-right">{count}题 ({pct}%)</span>
                 </div>
               );
             })}
