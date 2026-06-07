@@ -65,7 +65,10 @@ export default function Problems() {
   const [tags, setTags] = useState<{ name: string; count: number }[]>([]);
 
   const [searchInput, setSearchInput] = useState(search);
-  const [pageSize, setPageSize] = useState(12);
+  const [pageSize, setPageSize] = useState(() => {
+    const saved = localStorage.getItem('oj_pageSize');
+    return saved && PAGE_SIZE_OPTIONS.includes(Number(saved)) ? Number(saved) : 12;
+  });
   const [jumpPage, setJumpPage] = useState('');
   const [bookmarkFilter, setBookmarkFilter] = useState(false);
   const { isBookmarked } = useBookmarks();
@@ -193,6 +196,7 @@ export default function Problems() {
 
   const handlePageSizeChange = (size: number) => {
     setPageSize(size);
+    localStorage.setItem('oj_pageSize', String(size));
     updateParams({ page: '' });
   };
 
