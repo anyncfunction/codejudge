@@ -657,9 +657,31 @@ export default function ProblemDetail() {
                       </div>
                     )}
                     <p className="text-dark-400 text-xs mb-2">示例输入:</p>
-                    <pre className="text-dark-300 text-sm">{problem.test_cases[sampleCaseIndex].input}</pre>
+                    <div className="relative">
+                      <pre className="text-dark-300 text-sm bg-dark-900/50 rounded p-2">{problem.test_cases[sampleCaseIndex].input}</pre>
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(problem.test_cases[sampleCaseIndex].input);
+                          toast.success('输入已复制');
+                        }}
+                        className="absolute top-1 right-1 p-1 rounded text-dark-500 hover:text-white hover:bg-dark-700 transition-colors"
+                      >
+                        <Clipboard size={12} />
+                      </button>
+                    </div>
                     <p className="text-dark-400 text-xs mb-1 mt-2">示例输出:</p>
-                    <pre className="text-emerald-400 text-sm">{problem.test_cases[sampleCaseIndex].expected_output}</pre>
+                    <div className="relative">
+                      <pre className="text-emerald-400 text-sm bg-dark-900/50 rounded p-2">{problem.test_cases[sampleCaseIndex].expected_output}</pre>
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(problem.test_cases[sampleCaseIndex].expected_output);
+                          toast.success('输出已复制');
+                        }}
+                        className="absolute top-1 right-1 p-1 rounded text-dark-500 hover:text-white hover:bg-dark-700 transition-colors"
+                      >
+                        <Clipboard size={12} />
+                      </button>
+                    </div>
                   </div>
                 )}
 
