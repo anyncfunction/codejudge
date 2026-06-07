@@ -72,6 +72,7 @@ export default function Problems() {
   const { user } = useAuth();
   const [userStats, setUserStats] = useState<{ accepted: number } | null>(null);
   const totalProblems = stats?.total ?? 0;
+  const totalPages = data ? Math.ceil(data.total / pageSize) : 0;
 
   // Keyboard pagination
   useEffect(() => {
@@ -204,8 +205,6 @@ export default function Problems() {
       }
     }
   };
-
-  const totalPages = data ? Math.ceil(data.total / pageSize) : 0;
 
   const getPageNumbers = (): (number | '...')[] => {
     if (totalPages <= 7) {
