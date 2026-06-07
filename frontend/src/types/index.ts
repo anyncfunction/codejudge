@@ -3,7 +3,9 @@ export interface User {
   username: string;
   email: string;
   role: 'user' | 'admin';
-  stats?: { total: number; accepted: number };
+  last_login?: string;
+  created_at?: string;
+  stats?: { total: number; accepted: number; rank?: number };
 }
 
 export interface Problem {
@@ -19,6 +21,7 @@ export interface Problem {
   blanks_answer: string[];
   accepted_count: number;
   submission_count: number;
+  view_count?: number;
   user_passed?: boolean;
   user_status?: 'accepted' | 'attempted' | null;
   created_at: string;
