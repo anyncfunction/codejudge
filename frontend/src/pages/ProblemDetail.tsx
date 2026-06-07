@@ -15,6 +15,7 @@ import {
   ChevronLeft,
   ChevronRight,
   RefreshCw,
+  Eye,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../services/api';
@@ -75,6 +76,7 @@ export default function ProblemDetail() {
 
   // Hint panel
   const [hintExpanded, setHintExpanded] = useState(true);
+  const [showSolution, setShowSolution] = useState(false);
 
   const CODE_SAVE_KEY = `cj_code_${id}_${language}`;
 
@@ -489,6 +491,24 @@ export default function ProblemDetail() {
             </h2>
             <MarkdownRenderer content={problem.description} />
           </div>
+
+          {/* Solution */}
+          {problem.user_passed && problem.solution && (
+            <div className="card p-6 mb-6 border-primary-500/20">
+              <button
+                onClick={() => setShowSolution(!showSolution)}
+                className="flex items-center gap-2 text-sm font-medium text-primary-400 hover:text-primary-300 transition-colors"
+              >
+                <Eye size={16} />
+                {showSolution ? '隐藏参考答案' : '查看参考答案'}
+              </button>
+              {showSolution && (
+                <div className="mt-4 p-4 bg-dark-800/50 rounded-lg border border-dark-700">
+                  <MarkdownRenderer content={problem.solution} />
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Submission area */}
           <div className="card p-6 mb-6">
