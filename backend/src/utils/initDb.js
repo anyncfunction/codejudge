@@ -54,10 +54,18 @@ async function initDb() {
     )
   `);
 
-  const adminExists = queryOne('SELECT id FROM users WHERE email = ?', ['admin@oj.com']);
+  // Add default users if not exist
+  const adminExists = queryOne("SELECT id FROM users WHERE email = 'admin@oj.com'");
   if (!adminExists) {
-    run('INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)', ['admin', 'admin@oj.com', bcrypt.hashSync('admin123', 10), 'admin']);
-    run('INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)', ['testuser', 'test@oj.com', bcrypt.hashSync('test123', 10), 'user']);
+    const hash = bcrypt.hashSync('admin123', 10);
+    run("INSERT OR IGNORE INTO users (username, email, password, role, last_login) VALUES (?, ?, ?, 'admin', ?)",
+      ['admin', 'admin@oj.com', hash, new Date().toISOString()]);
+  }
+  const testExists = queryOne("SELECT id FROM users WHERE email = 'test@oj.com'");
+  if (!testExists) {
+    const hash = bcrypt.hashSync('test123', 10);
+    run("INSERT OR IGNORE INTO users (username, email, password, role, last_login) VALUES (?, ?, ?, 'user', ?)",
+      ['test', 'test@oj.com', hash, new Date().toISOString()]);
   }
 
   const problemExists = queryOne('SELECT id FROM problems LIMIT 1');
@@ -102,20 +110,6 @@ async function initDb() {
          p.test_cases||'[]', p.options||'[]', p.blanks_answer||'[]']
       );
     }
-  }
-
-  // Add default users if not exist
-  const adminExists = queryOne("SELECT id FROM users WHERE email = 'admin@oj.com'");
-  if (!adminExists) {
-    const hash = bcrypt.hashSync('admin123', 10);
-    run("INSERT OR IGNORE INTO users (username, email, password, role, last_login) VALUES (?, ?, ?, 'admin', ?)",
-      ['admin', 'admin@oj.com', hash, new Date().toISOString()]);
-  }
-  const testExists = queryOne("SELECT id FROM users WHERE email = 'test@oj.com'");
-  if (!testExists) {
-    const hash = bcrypt.hashSync('test123', 10);
-    run("INSERT OR IGNORE INTO users (username, email, password, role, last_login) VALUES (?, ?, ?, 'user', ?)",
-      ['test', 'test@oj.com', hash, new Date().toISOString()]);
   }
 
   console.log('Database initialized successfully');

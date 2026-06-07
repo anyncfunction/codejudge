@@ -9,18 +9,21 @@
 [![Express](https://img.shields.io/badge/Express-4.x-000000?style=flat-square&logo=express)](https://expressjs.com/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
-一个现代化在线评测平台，支持**编程题**、**选择题**、**填空题**三种题型，对标 LeetCode 式体验。
+一个现代化在线评测平台，支持 **JavaScript / Python / C++** 三种编程语言，**自带 10000 道预置题目**（编程/选择/填空），对标 LeetCode 式体验。
 
 </div>
 
 ## 特性
 
 - **三种题型** — 编程题（在线编写代码运行判题）、选择题（选项匹配评分）、填空题（文本匹配判题）
-- **代码在线运行** — 支持 JavaScript 和 Python，沙箱执行 + 超时控制
+- **多语言支持** — 支持 JavaScript、Python、C++（沙箱执行 + 8 秒超时）
+- **自带题库** — 首次启动自动生成 10000 道题目（3500 编程 + 3500 选择 + 3000 填空）
 - **Markdown 题目** — 题目描述支持完整 Markdown 渲染（表格、代码块等）
-- **用户系统** — JWT 认证，管理员可创建/编辑/删除题目
+- **用户系统** — JWT 认证，支持管理员/普通用户角色
 - **深色 UI** — 基于 Tailwind CSS 的暗色主题，Monaco Editor 代码编辑器
 - **判题详情** — 编程题按测试用例展示通过/失败，选择题显示正确答案
+- **成就系统** — 解题打卡、徽章解锁、排行榜、个人数据统计
+- **快捷键** — 支持快捷键导航（H 首页/G 题库/U 随机未做/Ctrl+K 搜索）
 
 ## 技术栈
 
@@ -104,7 +107,16 @@ docker compose up -d    # 一键启动
 
 ## 预置题目
 
-系统初始化时会自动创建 6 道示例题目（3 编程 + 2 选择 + 1 填空），涵盖：
+系统内置 **10000 道预置题目**（编程 3500 + 选择 3500 + 填空 3000），涵盖多种难度和标签。
+
+首次启动数据库为空时自动生成，或手动执行：
+
+```bash
+cd backend
+node src/utils/seedLarge.js
+```
+
+此外，系统初始化还会自动创建 6 道示例题目作为基础演示：
 
 - 两数之和、反转字符串、斐波那契数列（编程）
 - HTTP 状态码、SQL 查询（选择）
