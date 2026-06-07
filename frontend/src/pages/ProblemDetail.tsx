@@ -166,6 +166,17 @@ export default function ProblemDetail() {
     return () => clearTimeout(timer);
   }, [code, CODE_SAVE_KEY, problem?.type]);
 
+  // Warn before leaving with unsaved changes
+  useEffect(() => {
+    const handler = (e: BeforeUnloadEvent) => {
+      if (!saved && problem?.type === 'programming' && code) {
+        e.preventDefault();
+      }
+    };
+    window.addEventListener('beforeunload', handler);
+    return () => window.removeEventListener('beforeunload', handler);
+  }, [saved, code, problem?.type]);
+
   const handleCustomRun = async () => {
     setCustomRunning(true);
     setCustomOutput(null);
