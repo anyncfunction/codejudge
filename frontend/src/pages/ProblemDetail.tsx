@@ -447,6 +447,16 @@ export default function ProblemDetail() {
           >
             <Send size={14} /> 查看全部提交
           </Link>
+          <button
+            onClick={() => {
+              const text = `CodeJudge - ${problem.title}\n状态: ${submissionResult.status}\n得分: ${submissionResult.score}\n时间: ${submissionResult.created_at}`;
+              navigator.clipboard.writeText(text);
+              toast.success('结果已复制');
+            }}
+            className="text-sm text-dark-400 hover:text-white transition-colors inline-flex items-center gap-1"
+          >
+            <Clipboard size={14} /> 复制结果
+          </button>
         </div>
       </div>
     );
