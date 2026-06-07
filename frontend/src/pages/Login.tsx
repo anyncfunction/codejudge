@@ -103,6 +103,23 @@ export default function Login() {
             <LogIn size={18} />
             {submitting ? '登录中...' : '登录'}
           </button>
+
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => { setEmail('admin@oj.com'); setPassword('admin123'); }}
+              className="flex-1 px-3 py-2 rounded-lg text-xs bg-dark-800 text-dark-300 hover:bg-dark-700 border border-dark-700 transition-colors"
+            >
+              管理员登录
+            </button>
+            <button
+              type="button"
+              onClick={() => { setEmail('test@oj.com'); setPassword('test123'); }}
+              className="flex-1 px-3 py-2 rounded-lg text-xs bg-dark-800 text-dark-300 hover:bg-dark-700 border border-dark-700 transition-colors"
+            >
+              学生演示
+            </button>
+          </div>
         </form>
 
         <p className="mt-6 text-center text-sm text-gray-400">

@@ -17,6 +17,7 @@ import {
   RefreshCw,
   Eye,
   Terminal,
+  Clipboard,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../services/api';
@@ -466,9 +467,20 @@ export default function ProblemDetail() {
                   toast.success('链接已复制');
                 }}
                 className="p-1 rounded-md hover:bg-dark-700 transition-colors"
-                title="分享"
+                title="链接"
               >
                 <Share2 className="w-5 h-5 text-dark-500 hover:text-white transition-colors" />
+              </button>
+              <button
+                onClick={() => {
+                  const text = `[${problem.title}](${window.location.href})\n\n${problem.description}`;
+                  navigator.clipboard.writeText(text);
+                  toast.success('题目信息已复制');
+                }}
+                className="p-1 rounded-md hover:bg-dark-700 transition-colors"
+                title="复制题目"
+              >
+                <Clipboard className="w-5 h-5 text-dark-500 hover:text-white transition-colors" />
               </button>
               <h1 className="text-2xl font-bold text-white">
                 {problem.title}
