@@ -304,6 +304,11 @@ export default function Submissions() {
 
                         {expandedId === Number(submission.id) && (
                           <div className="px-4 pb-4 mt-2 border-t border-dark-700 pt-3">
+                            <div className="flex items-center gap-3 mb-3 text-xs text-dark-500">
+                              <span>提交 #{submission.id}</span>
+                              <span>语言: {submission.language || '-'}</span>
+                              {submission.time_ms != null && <span>耗时: {submission.time_ms}ms</span>}
+                            </div>
                             <Link
                               to={`/problems/${submission.problem_id}`}
                               className="inline-flex items-center gap-1 text-sm text-primary-400 hover:text-primary-300 mb-3 transition-colors"
