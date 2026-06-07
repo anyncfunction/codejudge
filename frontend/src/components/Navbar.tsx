@@ -20,6 +20,10 @@ export default function Navbar() {
         e.preventDefault();
         navigate('/');
       }
+      if (e.key === 'g' && !['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement).tagName)) {
+        e.preventDefault();
+        navigate('/problems');
+      }
       if (e.key === 'u' && !['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement).tagName) && user) {
         e.preventDefault();
         fetch('/api/problems/random-unsolved', {
