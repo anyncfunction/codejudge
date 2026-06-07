@@ -4,6 +4,7 @@ import api from '../services/api';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { useAuth } from '../context/AuthContext';
 import { TableSkeleton } from '../components/Skeleton';
+import EmptyState from '../components/EmptyState';
 
 interface LeaderboardEntry {
   rank: number;
@@ -49,11 +50,7 @@ export default function Leaderboard() {
           <p className="text-dark-400">{error}</p>
         </div>
       ) : entries.length === 0 ? (
-        <div className="card p-16 text-center">
-          <Zap className="w-16 h-16 text-dark-600 mx-auto mb-4" />
-          <h3 className="text-xl text-dark-300 mb-2">还没有排名数据</h3>
-          <p className="text-dark-500">去题库刷题，成为第一个上榜的人！</p>
-        </div>
+        <EmptyState icon={<Zap className="w-16 h-16" />} title="还没有排名数据" message="去题库刷题，成为第一个上榜的人！" />
       ) : (
         <div className="card overflow-hidden">
           <div className="overflow-x-auto">

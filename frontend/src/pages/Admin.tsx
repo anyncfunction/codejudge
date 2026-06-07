@@ -7,6 +7,7 @@ import api from '../services/api';
 import type { Problem, ProblemStats, AdminStats } from '../types';
 import SubmissionStatus from '../components/SubmissionStatus';
 import ConfirmDialog from '../components/ConfirmDialog';
+import EmptyState from '../components/EmptyState';
 
 export default function Admin() {
   const { user } = useAuth();
@@ -500,9 +501,7 @@ export default function Admin() {
           </button>
         </div>
       ) : problems.length === 0 ? (
-        <div className="card p-10 text-center">
-          <p className="text-gray-400">暂无题目，点击上方按钮创建</p>
-        </div>
+        <EmptyState title="暂无题目" message="点击上方「创建题目」按钮添加第一道题" />
       ) : (
         <div className="card overflow-x-auto">
           <table className="w-full text-sm">

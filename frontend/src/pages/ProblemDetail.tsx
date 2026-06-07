@@ -32,6 +32,7 @@ import type { Problem, Submission, TestCaseResult } from '../types';
 import { formatTimeAgo } from '../utils';
 import { useBookmarks } from '../context/BookmarkContext';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
+import { useRecentlyViewed } from '../hooks/useRecentlyViewed';
 
 const DIFFICULTY_LABELS: Record<string, string> = {
   easy: '简单',
@@ -55,6 +56,7 @@ export default function ProblemDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { isBookmarked, toggleBookmark } = useBookmarks();
+  const { addViewed } = useRecentlyViewed();
 
   const navigateToProblem = useCallback((newId: number) => {
     if (newId >= 1) navigate(`/problems/${newId}`);
@@ -102,6 +104,7 @@ export default function ProblemDetail() {
     try {
       const problem = await api.problems.get(Number(id));
       setProblem(problem);
+      addViewed(problem.id, problem.title);
       window.scrollTo(0, 0);
     } catch (err: any) {
       if (err.message?.includes('404')) {
@@ -494,6 +497,18 @@ export default function ProblemDetail() {
             title="下一题"
           >
             <ChevronRight size={18} />
+          </button>
+          <button
+            onClick={async () => {
+              try {
+                const p = await api.problems.randomUnsolved();
+                if (p?.id) navigate(`/problems/${p.id}`);
+              } catch {}
+            }}
+            className="p-1.5 rounded-md text-cyan-400 hover:text-white hover:bg-dark-800 transition-colors text-xs"
+            title="下一道未通过的题"
+          >
+            <Zap size={16} />
           </button>
         </div>
       </div>

@@ -21,6 +21,7 @@ import SubmissionStatus from '../components/SubmissionStatus';
 import type { Submission as SubmissionType, PaginatedResponse } from '../types';
 import { formatTimeAgo } from '../utils';
 import { TableSkeleton } from '../components/Skeleton';
+import EmptyState from '../components/EmptyState';
 
 const STATUS_FILTERS = [
   { label: '全部', value: '' },
@@ -252,10 +253,7 @@ export default function Submissions() {
           </button>
         </div>
       ) : submissions.length === 0 ? (
-        <div className="card p-10 text-center">
-          <Inbox size={40} className="mx-auto text-gray-500 mb-3" />
-          <p className="text-gray-400">暂无提交记录</p>
-        </div>
+        <EmptyState title="暂无提交记录" message="开始刷题后将在这里显示你的提交记录" icon={<Send className="w-16 h-16" />} />
       ) : (
         <>
           <div className="card overflow-hidden mb-6">

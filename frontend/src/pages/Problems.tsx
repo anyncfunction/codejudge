@@ -24,6 +24,7 @@ import type { Problem, PaginatedResponse, ProblemStats } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { useBookmarks } from '../context/BookmarkContext';
 import { CardSkeleton, TableSkeleton } from '../components/Skeleton';
+import EmptyState from '../components/EmptyState';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 const typeOptions = [
@@ -447,15 +448,14 @@ export default function Problems() {
           </button>
         </div>
       ) : data && data.problems && data.problems.length === 0 ? (
-        <div className="card p-10 text-center">
-          <Inbox size={48} className="mx-auto text-gray-600 mb-4" />
-          <p className="text-gray-300 text-lg font-medium mb-2">暂无题目</p>
-          <p className="text-gray-500 text-sm max-w-xs mx-auto">
-            {search || type || difficulty
+        <EmptyState
+          title="暂无题目"
+          message={
+            search || type || difficulty
               ? '没有找到匹配的题目，试试调整筛选条件或搜索关键词'
-              : '题库中还没有题目，管理员添加题目后将在这里展示'}
-          </p>
-        </div>
+              : '题库中还没有题目，管理员添加题目后将在这里展示'
+          }
+        />
       ) : (
         <>
           <div className="space-y-3 mb-6">

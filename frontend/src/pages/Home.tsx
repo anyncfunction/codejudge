@@ -4,6 +4,7 @@ import { Code2, ListChecks, PenLine, ArrowRight, BookOpen, Sparkles, Zap, Flame,
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
+import { useRecentlyViewed } from '../hooks/useRecentlyViewed';
 import ProblemCard from '../components/ProblemCard';
 import SubmissionStatus from '../components/SubmissionStatus';
 import type { ProblemStats, Problem } from '../types';
@@ -45,6 +46,7 @@ const statDefs = [
 export default function Home() {
   useDocumentTitle('首页');
   const { user } = useAuth();
+  const { recent: recentlyViewed } = useRecentlyViewed();
   const [stats, setStats] = useState<ProblemStats | null>(null);
   const [recentProblems, setRecentProblems] = useState<Problem[]>([]);
   const [daily, setDaily] = useState<{ problem: Problem; date: string } | null>(null);
@@ -286,6 +288,28 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {recentProblems.map((problem) => (
               <ProblemCard key={problem.id} problem={problem} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Recently Viewed */}
+      {recentlyViewed.length > 0 && (
+        <section className="pb-10">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold text-white flex items-center gap-2">
+              <Clock size={18} className="text-dark-400" /> 最近浏览
+            </h2>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {recentlyViewed.map((p) => (
+              <Link
+                key={p.id}
+                to={`/problems/${p.id}`}
+                className="px-3 py-1.5 rounded-lg bg-dark-800/80 border border-dark-700 text-sm text-dark-300 hover:text-white hover:border-primary-500/40 transition-colors"
+              >
+                #{p.id} {p.title}
+              </Link>
             ))}
           </div>
         </section>
