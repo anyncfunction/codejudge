@@ -26,6 +26,25 @@ data = sys.stdin.read().strip().split('\\n')
 # nums = list(map(int, data[0].split()))
 # print(sum(nums))
 `,
+
+  cpp: `// 读取标准输入
+#include <iostream>
+#include <vector>
+#include <string>
+#include <sstream>
+using namespace std;
+
+int main() {
+    // 在这里处理数据
+    // 使用 cout 输出结果
+
+    // 示例：读取一行整数
+    // int n;
+    // cin >> n;
+    // cout << n << endl;
+    return 0;
+}
+`,
 };
 
 function getTemplate(language) {
@@ -111,6 +130,16 @@ function runCode(code, language, input) {
         filename = path.join(tmpDir, 'main.py');
         fs.writeFileSync(filename, code);
         cmd = `python "${filename}"`;
+        break;
+      }
+      case 'c':
+      case 'cpp':
+      case 'c++': {
+        filename = path.join(tmpDir, 'main.cpp');
+        fs.writeFileSync(filename, code);
+        const binary = path.join(tmpDir, 'main.exe');
+        execSync(`g++ "${filename}" -o "${binary}" -std=c++17 -O2`, { timeout: TIMEOUT_MS, windowsHide: true });
+        cmd = `"${binary}"`;
         break;
       }
       default:

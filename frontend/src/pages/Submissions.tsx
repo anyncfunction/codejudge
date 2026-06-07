@@ -33,6 +33,7 @@ const LANGUAGE_FILTERS = [
   { label: '全部语言', value: '' },
   { label: 'JavaScript', value: 'javascript' },
   { label: 'Python', value: 'python' },
+  { label: 'C++', value: 'cpp' },
 ];
 
 const PAGE_SIZE = 15;

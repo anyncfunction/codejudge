@@ -67,7 +67,7 @@ export default function ProblemDetail() {
 
   // Programming
   const [code, setCode] = useState('');
-  const [language, setLanguage] = useState<'javascript' | 'python'>('javascript');
+  const [language, setLanguage] = useState<'javascript' | 'python' | 'cpp'>('javascript');
 
   // Choice
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
@@ -640,7 +640,7 @@ export default function ProblemDetail() {
             {problem.type === 'programming' && (
               <>
                 <div className="flex gap-2 mb-3">
-                  {(['javascript', 'python'] as const).map((lang) => (
+                  {(['javascript', 'python', 'cpp'] as const).map((lang) => (
                     <button
                       key={lang}
                       onClick={() => setLanguage(lang)}
@@ -650,7 +650,7 @@ export default function ProblemDetail() {
                           : 'bg-dark-800 text-gray-300 hover:bg-dark-700'
                       }`}
                     >
-                      {lang === 'javascript' ? 'JavaScript' : 'Python'}
+                      {lang === 'javascript' ? 'JavaScript' : lang === 'python' ? 'Python' : 'C++'}
                     </button>
                   ))}
                   <span className={`ml-auto text-[10px] self-center transition-opacity ${saved ? 'text-emerald-500/70' : 'text-yellow-500/70 opacity-0'}`}>
@@ -765,7 +765,7 @@ export default function ProblemDetail() {
 
                 <CodeEditor
                   code={code}
-                  language={language === 'javascript' ? 'javascript' : 'python'}
+                  language={language === 'javascript' ? 'javascript' : language === 'python' ? 'python' : 'cpp'}
                   onChange={setCode}
                 />
               </>

@@ -104,6 +104,20 @@ async function initDb() {
     }
   }
 
+  // Add default users if not exist
+  const adminExists = queryOne("SELECT id FROM users WHERE email = 'admin@oj.com'");
+  if (!adminExists) {
+    const hash = bcrypt.hashSync('admin123', 10);
+    run("INSERT OR IGNORE INTO users (username, email, password, role, last_login) VALUES (?, ?, ?, 'admin', ?)",
+      ['admin', 'admin@oj.com', hash, new Date().toISOString()]);
+  }
+  const testExists = queryOne("SELECT id FROM users WHERE email = 'test@oj.com'");
+  if (!testExists) {
+    const hash = bcrypt.hashSync('test123', 10);
+    run("INSERT OR IGNORE INTO users (username, email, password, role, last_login) VALUES (?, ?, ?, 'user', ?)",
+      ['test', 'test@oj.com', hash, new Date().toISOString()]);
+  }
+
   console.log('Database initialized successfully');
 }
 

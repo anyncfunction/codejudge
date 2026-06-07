@@ -15,14 +15,14 @@ export default function CodeEditor({ code, language, onChange, readOnly = false 
         <div className="flex-1 border-b border-dark-700" />
         <span className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-dark-400">
           <Code2 className="w-3.5 h-3.5" />
-          {language === 'python' ? 'Python' : 'JavaScript'}
+          {language === 'python' ? 'Python' : language === 'cpp' ? 'C++' : 'JavaScript'}
         </span>
       </div>
 
       <div className="rounded-lg border border-dark-700 overflow-hidden">
         <Editor
           height="400px"
-          language={language === 'python' ? 'python' : 'javascript'}
+          language={language === 'python' ? 'python' : language === 'cpp' ? 'cpp' : 'javascript'}
           value={code}
           onChange={(value) => onChange(value || '')}
           theme="vs-dark"

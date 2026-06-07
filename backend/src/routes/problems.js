@@ -54,13 +54,6 @@ router.get('/random-unsolved', authenticate, getRandomUnsolved);
 router.get('/admin/stats', adminOnly, getAdminStats);
 router.get('/export', adminOnly, exportProblems);
 router.post('/import', adminOnly, importProblems);
-router.get('/:id', optionalAuth, getProblem);
-router.get('/:id/similar', optionalAuth, getSimilarProblems);
-router.post('/', adminOnly, createProblem);
-router.post('/admin/optimize', adminOnly, optimizeDatabase);
-router.put('/:id', adminOnly, updateProblem);
-router.delete('/:id', adminOnly, deleteProblem);
-
 router.get('/docs', (req, res) => {
   res.json({
     name: 'CodeJudge API',
@@ -94,5 +87,6 @@ router.get('/docs', (req, res) => {
     ],
   });
 });
+router.get('/:id', optionalAuth, getProblem);
 
 module.exports = router;

@@ -232,4 +232,31 @@ function getRandomUnsolved(req, res) {
   res.json({ problem });
 }
 
+function getSimilarProblems(req, res) {
+  const { id } = req.params;
+  const problem = queryOne('SELECT * FROM problems WHERE id = ?', [id]);
+  if (!problem) return res.status(404).json({ error: '题目不存在' });
+  const tags = (problem.tags || '').split(',').map(t => t.trim()).filter(Boolean);
+  let similar = [];
+  if (tags.length > 0) {
+    const likeClauses = tags.map(() => "tags LIKE ?");
+    const tagParams = tags.map(t => `%${t}%`);
+    similar = queryAll(
+      `SELECT id, title, type, difficulty, tags, accepted_count, submission_count
+       FROM problems WHERE id != ? AND (${likeClauses.join(' OR ')})
+       ORDER BY accepted_count DESC LIMIT 5`,
+      [id, ...tagParams]
+    );
+  }
+  if (similar.length === 0) {
+    similar = queryAll(
+      `SELECT id, title, type, difficulty, tags, accepted_count, submission_count
+       FROM problems WHERE id != ? AND difficulty = ?
+       ORDER BY accepted_count DESC LIMIT 5`,
+      [id, problem.difficulty]
+    );
+  }
+  res.json(similar);
+}
+
 module.exports = { listProblems, getProblem, createProblem, updateProblem, deleteProblem, getProblemStats, getAdminStats, getTagsCloud, exportProblems, importProblems, optimizeDatabase, getSimilarProblems, getRandomUnsolved };
