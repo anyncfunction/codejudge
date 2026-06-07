@@ -19,6 +19,7 @@ import {
   Zap,
   Terminal,
   Clipboard,
+  Send,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../services/api';
@@ -416,12 +417,20 @@ export default function ProblemDetail() {
           </div>
         )}
 
-        <button
-          onClick={() => { setSubmissionResult(null); window.scrollTo(0, 0); }}
-          className="mt-4 text-sm text-primary-400 hover:text-primary-300 transition-colors inline-flex items-center gap-1"
-        >
-          <RefreshCw size={14} /> 再来一次
-        </button>
+        <div className="flex items-center gap-3 mt-4">
+          <button
+            onClick={() => { setSubmissionResult(null); window.scrollTo(0, 0); }}
+            className="text-sm text-primary-400 hover:text-primary-300 transition-colors inline-flex items-center gap-1"
+          >
+            <RefreshCw size={14} /> 再来一次
+          </button>
+          <Link
+            to={`/submissions?problem_id=${problem.id}`}
+            className="text-sm text-dark-400 hover:text-white transition-colors inline-flex items-center gap-1"
+          >
+            <Send size={14} /> 查看全部提交
+          </Link>
+        </div>
       </div>
     );
   };
