@@ -57,7 +57,14 @@ onlinejudge/
 
 ## 快速开始
 
-### 1. 安装依赖
+### 1. 克隆项目
+
+```bash
+git clone https://github.com/anyncfunction/codejudge.git
+cd codejudge
+```
+
+### 2. 安装依赖
 
 ```bash
 # 后端
@@ -69,30 +76,32 @@ cd ../frontend
 npm install
 ```
 
-### 2. 启动
+### 3. 启动
 
 ```bash
-# 生产模式（后端同时托管前端）
+# 开发模式（前后端分离，推荐）
 cd backend
-npm start
-# 访问 http://localhost:3001
+npm start          # 后端 http://localhost:3001
+# 新开终端，回到项目根目录后：
+cd frontend
+npm run dev        # 前端 http://localhost:5173（自动代理 /api 到后端）
 
-# 开发模式（前后端分离，支持热更新）
-cd backend && npm run dev    # 后端 :3001
-cd frontend && npm run dev   # 前端 :5173（自动代理 API）
+# 生产模式（后端托管前端构建产物）
+cd backend
+npm start          # 访问 http://localhost:3001
 ```
 
-### 3. 构建前端
+### 4. 构建前端（可选）
 
 ```bash
 cd frontend
-npm run build    # 输出到 dist/，后端自动托管
+npm run build      # 输出到 dist/，后端自动托管
 ```
 
-### 4. Docker 部署
+### 5. Docker 部署（推荐）
 
 ```bash
-docker compose up -d    # 一键启动
+docker compose up -d           # 在项目根目录执行
 # 访问 http://localhost:3001
 ```
 
