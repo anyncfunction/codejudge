@@ -152,6 +152,7 @@ export default function Profile() {
   const stats = profile.stats || { total: 0, accepted: 0 };
   const acceptanceRate = stats.total > 0 ? Math.round((stats.accepted / stats.total) * 100) : 0;
   const uniqueProblems = new Set(submissions.map((s) => s.problem_id)).size;
+  const avgScore = submissions.length > 0 ? Math.round(submissions.reduce((s: number, sub: any) => s + (sub.score || 0), 0) / submissions.length) : 0;
   const days = Array.from({ length: 30 }, (_, i) => {
     const d = new Date();
     d.setDate(d.getDate() - (29 - i));
@@ -216,7 +217,7 @@ export default function Profile() {
       </div>
 
       {/* Stats cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-6 gap-4">
         <div className="card p-4 text-center">
           <p className="text-dark-400 text-xs uppercase tracking-wide mb-1">
             总提交
@@ -248,6 +249,13 @@ export default function Profile() {
             排名
           </p>
           <p className="text-2xl font-bold text-yellow-400">#{stats.rank ?? '-'}</p>
+        </div>
+        <div className="card p-4 text-center">
+          <p className="text-dark-400 text-xs uppercase tracking-wide mb-1 flex items-center justify-center gap-1">
+            <Zap className="w-3 h-3" />
+            平均分
+          </p>
+          <p className="text-2xl font-bold text-cyan-400">{avgScore}</p>
         </div>
       </div>
 
