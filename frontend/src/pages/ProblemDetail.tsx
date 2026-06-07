@@ -16,6 +16,7 @@ import {
   ChevronRight,
   RefreshCw,
   Eye,
+  Zap,
   Terminal,
   Clipboard,
 } from 'lucide-react';
@@ -503,6 +504,11 @@ export default function ProblemDetail() {
               </span>
               <span className="px-2 py-0.5 bg-blue-600 rounded text-xs text-white">
                 {TYPE_LABELS[problem.type] || problem.type}
+              </span>
+              <span className="text-xs text-dark-400 flex items-center gap-3">
+                <span title="提交次数"><Zap size={12} className="inline" /> {problem.submission_count ?? 0}</span>
+                <span title="通过次数"><CheckCircle size={12} className="inline text-green-400" /> {problem.accepted_count ?? 0}</span>
+                <span title="浏览"><Eye size={12} className="inline" /> {problem.view_count ?? 0}</span>
               </span>
             </div>
 
