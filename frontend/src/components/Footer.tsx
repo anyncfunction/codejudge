@@ -1,6 +1,16 @@
-import { Github, Heart } from 'lucide-react';
+import { Github, Heart, Activity } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 export default function Footer() {
+  const [backendOnline, setBackendOnline] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/health')
+      .then(r => r.json())
+      .then(d => setBackendOnline(d.status === 'ok'))
+      .catch(() => setBackendOnline(false));
+  }, []);
+
   return (
     <footer className="border-t border-dark-800 mt-16 py-8">
       <div className="max-w-7xl mx-auto px-4 text-center">
@@ -11,6 +21,10 @@ export default function Footer() {
           </a>
           <span className="flex items-center gap-1">
             Made with <Heart className="w-3.5 h-3.5 text-red-400" /> by CodeJudge
+          </span>
+          <span className="flex items-center gap-1.5 text-xs">
+            <span className={`w-2 h-2 rounded-full inline-block ${backendOnline ? 'bg-green-400' : 'bg-red-400'}`} />
+            {backendOnline ? '服务正常' : '连接中...'}
           </span>
         </div>
         <p className="text-dark-500 text-xs">
