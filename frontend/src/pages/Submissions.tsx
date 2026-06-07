@@ -28,7 +28,7 @@ const STATUS_FILTERS = [
   { label: '通过', value: 'accepted' },
   { label: '答案错误', value: 'wrong_answer' },
   { label: '运行错误', value: 'runtime_error' },
-  { label: '超时', value: 'time_limit_exceeded' },
+  { label: '超时', value: 'time_limit' },
 ];
 
 const LANGUAGE_FILTERS = [
