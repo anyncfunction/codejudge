@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { User, Mail, Shield, Award, TrendingUp, Loader2, AlertTriangle, CheckCircle2, XCircle, Clock, Zap, Lock, Key, CalendarDays, Code, PieChart, Trash2, Trophy, LogIn, Flame } from 'lucide-react';
+import { User, Mail, Shield, Award, TrendingUp, Loader2, AlertTriangle, CheckCircle2, XCircle, Clock, Zap, Lock, Key, CalendarDays, Code, PieChart, Trash2, Trophy, LogIn, Flame, Download } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import toast from 'react-hot-toast';
@@ -509,6 +509,31 @@ export default function Profile() {
             </button>
           </form>
         )}
+      </div>
+
+      {/* Export Data */}
+      <div className="card p-6">
+        <button
+          onClick={() => {
+            const data = {
+              profile,
+              submissions: submissions.slice(0, 100),
+              languageStats,
+              submissionStatus,
+              calendarDates: Array.from(calendarDates),
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a'); a.href = url; a.download = 'codejudge_data.json'; a.click();
+            URL.revokeObjectURL(url);
+            toast.success('数据已导出');
+          }}
+          className="flex items-center gap-2 text-sm font-medium text-cyan-400 hover:text-cyan-300 transition-colors"
+        >
+          <Download className="w-4 h-4" />
+          导出我的数据
+        </button>
+        <p className="text-xs text-dark-500 mt-2">下载个人资料、提交记录和统计数据（JSON格式）</p>
       </div>
 
       {/* Delete Account */}
