@@ -7,10 +7,13 @@ import {
   Save,
   Loader2,
   AlertTriangle,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../services/api';
 import type { Problem } from '../types';
+import MarkdownRenderer from '../components/MarkdownRenderer';
 
 interface TestCase {
   input: string;
@@ -37,6 +40,7 @@ export default function AdminProblemForm() {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
 
   // Form fields
   const [title, setTitle] = useState('');
@@ -309,10 +313,23 @@ export default function AdminProblemForm() {
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="请输入题目描述（支持 HTML）"
+            placeholder="请输入题目描述（支持 HTML 和 Markdown）"
             rows={6}
             className="input w-full resize-y"
           />
+          <button
+            type="button"
+            onClick={() => setShowPreview(!showPreview)}
+            className="mt-1 text-xs text-dark-400 hover:text-white transition-colors inline-flex items-center gap-1"
+          >
+            {showPreview ? <EyeOff size={12} /> : <Eye size={12} />}
+            {showPreview ? '关闭预览' : '预览'}
+          </button>
+          {showPreview && description && (
+            <div className="mt-2 p-4 bg-dark-800/50 rounded-lg border border-dark-700">
+              <MarkdownRenderer content={description} />
+            </div>
+          )}
         </div>
 
         {/* Type */}
