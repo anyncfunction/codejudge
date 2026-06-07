@@ -94,7 +94,8 @@ export default function ProblemCard({ problem }: { problem: Problem }) {
           {tags.map((tag) => (
             <span
               key={tag}
-              className="px-2 py-0.5 rounded-md text-xs bg-dark-700/50 text-dark-400 border border-dark-600/50"
+              onClick={(e) => { e.preventDefault(); window.location.href = `/problems?search=${encodeURIComponent(tag)}`; }}
+              className="px-2 py-0.5 rounded-md text-xs bg-dark-700/50 text-dark-400 border border-dark-600/50 cursor-pointer hover:bg-dark-700 hover:text-dark-200 transition-colors"
             >
               {tag}
             </span>
