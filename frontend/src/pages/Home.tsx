@@ -113,6 +113,7 @@ export default function Home() {
           <p className="mt-4 text-green-400 text-sm">
             欢迎回来，{user.username}
             {todayCount > 0 && <span className="ml-3 text-dark-400">今日提交: <span className="text-blue-400 font-semibold">{todayCount}</span></span>}
+            {todayCount > 0 && <span className="ml-4 inline-flex items-center gap-1"><Flame size={14} className="text-orange-400" /><span className="text-orange-400 font-semibold">🔥 已打卡</span></span>}
           </p>
         )}
 
@@ -123,6 +124,18 @@ export default function Home() {
           开始刷题
           <ArrowRight size={18} />
         </Link>
+        <button
+          onClick={async () => {
+            try {
+              const p = await api.problems.random();
+              if (p?.id) window.open(`/problems/${p.id}`, '_self');
+            } catch {}
+          }}
+          className="mt-3 inline-flex items-center gap-2 px-5 py-2.5 bg-dark-800 hover:bg-dark-700 text-gray-300 rounded-lg text-sm transition-colors border border-dark-600"
+        >
+          <Zap size={16} className="text-yellow-400" />
+          随机一题
+        </button>
       </section>
 
       {/* Daily Challenge */}

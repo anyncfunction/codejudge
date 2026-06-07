@@ -99,6 +99,7 @@ router.get('/admin/users', authenticate, (req, res) => {
 
 router.delete('/admin/users/:id', authenticate, (req, res) => {
   if (req.user.role !== 'admin') return res.status(403).json({ error: '需要管理员权限' });
+  run('DELETE FROM submissions WHERE user_id = ?', [req.params.id]);
   run('DELETE FROM users WHERE id = ? AND role != ?', [req.params.id, 'admin']);
   res.json({ message: '用户已删除' });
 });

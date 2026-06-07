@@ -8,6 +8,7 @@ import type { Submission } from '../types';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import GamificationSection from '../components/GamificationSection';
 import DailyGoal from '../components/DailyGoal';
+import ConfirmDialog from '../components/ConfirmDialog';
 
 const STATUS_MAP: Record<string, { label: string; icon: React.ReactNode; className: string }> = {
   accepted: {
@@ -58,6 +59,8 @@ export default function Profile() {
   const [difficultyStats, setDifficultyStats] = useState<{difficulty: string; count: number}[]>([]);
   const [bio, setBio] = useState(localStorage.getItem('oj_bio') || '');
   const [editingBio, setEditingBio] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmAction, setConfirmAction] = useState<() => void>(() => {});
 
   useEffect(() => {
     const token = localStorage.getItem('oj_token');
@@ -574,8 +577,8 @@ export default function Profile() {
       {/* Delete Account */}
       <div className="card p-6 border-red-600/20">
         <button
-          onClick={async () => {
-            if (window.confirm('确定要删除账户吗？所有提交记录也将被永久删除。此操作不可撤销。')) {
+          onClick={() => {
+            setConfirmAction(() => async () => {
               try {
                 await api.auth.deleteAccount();
                 toast.success('账户已删除');
@@ -584,7 +587,9 @@ export default function Profile() {
               } catch (err: any) {
                 toast.error(err.message || '删除失败');
               }
-            }
+              setConfirmOpen(false);
+            });
+            setConfirmOpen(true);
           }}
           className="flex items-center gap-2 text-sm font-medium text-red-400 hover:text-red-300 transition-colors"
         >
@@ -642,6 +647,16 @@ export default function Profile() {
           </div>
         )}
       </div>
+
+      <ConfirmDialog
+        open={confirmOpen}
+        title="删除账户"
+        message="确定要删除账户吗？所有提交记录也将被永久删除。此操作不可撤销。"
+        variant="danger"
+        confirmText="确认删除"
+        onConfirm={confirmAction}
+        onCancel={() => setConfirmOpen(false)}
+      />
     </div>
   );
 }

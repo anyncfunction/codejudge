@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import type { Problem, ProblemStats, AdminStats } from '../types';
 import SubmissionStatus from '../components/SubmissionStatus';
+import ConfirmDialog from '../components/ConfirmDialog';
 
 export default function Admin() {
   const { user } = useAuth();
@@ -26,6 +27,10 @@ export default function Admin() {
   const [dbOptimizing, setDbOptimizing] = useState(false);
   const [rejudgingId, setRejudgingId] = useState<number | null>(null);
   const [systemInfo, setSystemInfo] = useState<any>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmAction, setConfirmAction] = useState<() => void>(() => {});
+  const [confirmTitle, setConfirmTitle] = useState('');
+  const [confirmMessage, setConfirmMessage] = useState('');
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -96,36 +101,44 @@ export default function Admin() {
   };
 
   const handleDelete = async (problemId: number, title: string) => {
-    if (!window.confirm(`确定要删除题目「${title}」吗？此操作不可撤销。`)) {
-      return;
-    }
-    setDeletingId(problemId);
-    try {
-      await api.problems.delete(problemId);
-      setProblems((prev) => prev.filter((p) => p.id !== problemId));
-      toast.success('删除成功');
-    } catch (err: any) {
-      toast.error(err.message || '删除失败');
-    } finally {
-      setDeletingId(null);
-    }
+    setConfirmTitle('删除题目');
+    setConfirmMessage(`确定要删除题目「${title}」吗？此操作不可撤销。`);
+    setConfirmAction(() => async () => {
+      setDeletingId(problemId);
+      try {
+        await api.problems.delete(problemId);
+        setProblems((prev) => prev.filter((p) => p.id !== problemId));
+        toast.success('删除成功');
+      } catch (err: any) {
+        toast.error(err.message || '删除失败');
+      } finally {
+        setDeletingId(null);
+        setConfirmOpen(false);
+      }
+    });
+    setConfirmOpen(true);
   };
 
   const handleDeleteUser = async (userId: number, username: string) => {
-    if (!window.confirm(`确定要删除用户「${username}」吗？此操作不可撤销。`)) return;
-    try {
-      const res = await fetch(`/api/auth/admin/users/${userId}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${localStorage.getItem('oj_token')}` },
-      });
-      if (res.ok) {
-        toast.success('用户已删除');
-        setUsers(prev => prev.filter(u => u.id !== userId));
-      } else {
-        const data = await res.json();
-        toast.error(data.error || '删除失败');
-      }
-    } catch { toast.error('删除失败'); }
+    setConfirmTitle('删除用户');
+    setConfirmMessage(`确定要删除用户「${username}」吗？此操作不可撤销。`);
+    setConfirmAction(() => async () => {
+      try {
+        const res = await fetch(`/api/auth/admin/users/${userId}`, {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${localStorage.getItem('oj_token')}` },
+        });
+        if (res.ok) {
+          toast.success('用户已删除');
+          setUsers(prev => prev.filter(u => u.id !== userId));
+        } else {
+          const data = await res.json();
+          toast.error(data.error || '删除失败');
+        }
+      } catch { toast.error('删除失败'); }
+      setConfirmOpen(false);
+    });
+    setConfirmOpen(true);
   };
 
   const fetchAllSubmissions = async (p = 1) => {
@@ -629,6 +642,15 @@ export default function Admin() {
           </div>
         )}
       </div>
+
+      <ConfirmDialog
+        open={confirmOpen}
+        title={confirmTitle}
+        message={confirmMessage}
+        variant="danger"
+        onConfirm={confirmAction}
+        onCancel={() => setConfirmOpen(false)}
+      />
     </div>
   );
 }

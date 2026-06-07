@@ -60,6 +60,8 @@ const api = {
     getAdminStats: () => request<import('../types').AdminStats>('/problems/admin/stats'),
     getTags: () => request<{ tags: { name: string; count: number }[] }>('/problems/tags'),
     getDaily: () => request<{ problem: import('../types').Problem; date: string }>('/problems/daily'),
+    random: (type?: string) => request<import('../types').Problem>(`/problems/random${type ? `?type=${type}` : ''}`),
+    randomUnsolved: () => request<import('../types').Problem>('/problems/random-unsolved'),
   },
 
   submissions: {

@@ -135,11 +135,7 @@ function getAdminStats(req, res) {
   const totalSubmissions = queryOne('SELECT COUNT(*) as count FROM submissions').count;
   const acceptedCount = queryOne("SELECT COUNT(*) as count FROM submissions WHERE status = 'accepted'").count;
 
-  const byType = queryAll(`
-    SELECT p.type, COUNT(*) as count
-    FROM submissions s JOIN problems p ON s.problem_id = p.id
-    GROUP BY p.type
-  `);
+  const problemsByType = queryAll('SELECT type, COUNT(*) as count FROM problems GROUP BY type');
 
   const topUsers = queryAll(`
     SELECT u.username, COUNT(*) as submission_count
@@ -158,7 +154,7 @@ function getAdminStats(req, res) {
     totalSubmissions,
     acceptedCount,
     acceptanceRate: totalSubmissions > 0 ? Math.round((acceptedCount / totalSubmissions) * 100) : 0,
-    byType: Object.fromEntries(byType.map(r => [r.type, r.count])),
+    byType: Object.fromEntries(problemsByType.map(r => [r.type, r.count])),
     topUsers,
     recent24h,
   });
