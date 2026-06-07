@@ -71,6 +71,23 @@ export default function Navbar() {
               <Dices className="w-4 h-4" />
               随机
             </button>
+            {user && (
+              <button
+                onClick={async () => {
+                  try {
+                    const token = localStorage.getItem('oj_token');
+                    const data = await fetch('/api/problems/random-unsolved', {
+                      headers: { Authorization: `Bearer ${token}` },
+                    }).then(r => r.json());
+                    if (data.problem) navigate(`/problems/${data.problem.id}`);
+                  } catch {}
+                }}
+                className="px-4 py-2 rounded-lg text-sm font-medium text-dark-400 hover:text-dark-200 hover:bg-dark-800 transition-colors flex items-center gap-1.5"
+              >
+                <Activity className="w-4 h-4" />
+                未做
+              </button>
+            )}
             <div className="relative">
               <Hash className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-dark-500 pointer-events-none" />
               <input

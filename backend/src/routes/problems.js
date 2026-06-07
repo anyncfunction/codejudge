@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const { queryOne } = require('../config/db');
-const { listProblems, getProblem, createProblem, updateProblem, deleteProblem, getProblemStats, getAdminStats, getTagsCloud, exportProblems, importProblems, optimizeDatabase, getSimilarProblems } = require('../controllers/problemController');
+const { listProblems, getProblem, createProblem, updateProblem, deleteProblem, getProblemStats, getAdminStats, getTagsCloud, exportProblems, importProblems, optimizeDatabase, getSimilarProblems, getRandomUnsolved } = require('../controllers/problemController');
 const { getTemplate, runCode } = require('../services/judgeService');
 const { optionalAuth, authenticate, adminOnly } = require('../middleware/auth');
 
@@ -50,6 +50,7 @@ router.get('/random', (req, res) => {
   try { problem.blanks_answer = JSON.parse(problem.blanks_answer); } catch { problem.blanks_answer = []; }
   res.json({ problem });
 });
+router.get('/random-unsolved', authenticate, getRandomUnsolved);
 router.get('/admin/stats', adminOnly, getAdminStats);
 router.get('/export', adminOnly, exportProblems);
 router.post('/import', adminOnly, importProblems);

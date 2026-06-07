@@ -217,20 +217,19 @@ function importProblems(req, res) {
   res.json({ message: `成功导入 ${imported} 道题目`, count: imported });
 }
 
-function getSimilarProblems(req, res) {
-  const { tags } = req.query;
-  if (!tags) return res.json([]);
-  const tagArr = tags.split(',');
-  const problems = queryAll(
-    'SELECT id, title, type, difficulty, tags, accepted_count, submission_count FROM problems WHERE id != ?',
-    [req.params.id]
+function getRandomUnsolved(req, res) {
+  const count = queryOne('SELECT COUNT(*) as count FROM problems WHERE id NOT IN (SELECT problem_id FROM submissions WHERE user_id = ?)', [req.user.id]);
+  if (!count || !count.count) return res.json({ problem: null });
+  const offset = Math.floor(Math.random() * count.count);
+  const problem = queryOne(
+    'SELECT * FROM problems WHERE id NOT IN (SELECT problem_id FROM submissions WHERE user_id = ?) LIMIT 1 OFFSET ?',
+    [req.user.id, offset]
   );
-  const scored = problems.map(p => {
-    const pTags = (p.tags || '').split(',');
-    const matches = tagArr.filter(t => pTags.includes(t)).length;
-    return { ...p, matches };
-  }).filter(p => p.matches > 0).sort((a, b) => b.matches - a.matches).slice(0, 5);
-  res.json(scored);
+  if (!problem) return res.json({ problem: null });
+  try { problem.test_cases = JSON.parse(problem.test_cases); } catch { problem.test_cases = []; }
+  try { problem.options = JSON.parse(problem.options); } catch { problem.options = []; }
+  try { problem.blanks_answer = JSON.parse(problem.blanks_answer); } catch { problem.blanks_answer = []; }
+  res.json({ problem });
 }
 
-module.exports = { listProblems, getProblem, createProblem, updateProblem, deleteProblem, getProblemStats, getAdminStats, getTagsCloud, exportProblems, importProblems, optimizeDatabase, getSimilarProblems };
+module.exports = { listProblems, getProblem, createProblem, updateProblem, deleteProblem, getProblemStats, getAdminStats, getTagsCloud, exportProblems, importProblems, optimizeDatabase, getSimilarProblems, getRandomUnsolved };
