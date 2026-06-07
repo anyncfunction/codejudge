@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Trophy, Medal, User as UserIcon, Zap, BarChart3 } from 'lucide-react';
 import api from '../services/api';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
+import { useAuth } from '../context/AuthContext';
 
 interface LeaderboardEntry {
   rank: number;
@@ -14,6 +15,7 @@ interface LeaderboardEntry {
 
 export default function Leaderboard() {
   useDocumentTitle('排行榜');
+  const { user } = useAuth();
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -81,7 +83,7 @@ export default function Leaderboard() {
                       key={entry.id}
                       className={`border-b border-dark-800 hover:bg-dark-800/50 transition-colors ${
                         entry.rank <= 3 ? 'bg-dark-800/20' : ''
-                      }`}
+                      } ${user && entry.id === user.id ? 'bg-primary-500/10 border-l-2 border-l-primary-500' : ''}`}
                     >
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-2">
@@ -96,6 +98,9 @@ export default function Leaderboard() {
                           }`}>
                             {entry.username}
                           </span>
+                          {user && entry.id === user.id && (
+                            <span className="text-[10px] px-1.5 py-0.5 bg-primary-500/20 text-primary-400 rounded">你</span>
+                          )}
                         </div>
                       </td>
                       <td className="py-3 px-4 text-center">
