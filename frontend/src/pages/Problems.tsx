@@ -256,6 +256,16 @@ export default function Problems() {
         <button onClick={handleSearch} className="btn-primary px-4">
           搜索
         </button>
+        <button
+          onClick={() => {
+            setSearchInput('');
+            setSearchParams({});
+          }}
+          className="btn-secondary px-3"
+          title="重置筛选"
+        >
+          <RefreshCw size={16} />
+        </button>
       </div>
 
       {/* Tags Cloud */}
