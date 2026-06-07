@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Plus, Edit, Trash2, Users, Shield, Code, BarChart3, AlertTriangle, Loader2, Activity, Percent, Clock, Download, Upload, Trophy } from 'lucide-react';
+import { Plus, Edit, Trash2, Users, Shield, Code, BarChart3, AlertTriangle, Loader2, Activity, Percent, Clock, Download, Upload, Trophy, ChevronLeft, ChevronRight } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
@@ -20,6 +20,8 @@ export default function Admin() {
   const [users, setUsers] = useState<any[]>([]);
   const [usersLoading, setUsersLoading] = useState(false);
   const [allSubmissions, setAllSubmissions] = useState<any[]>([]);
+  const [allPage, setAllPage] = useState(1);
+  const [allTotalPages, setAllTotalPages] = useState(0);
   const [allLoading, setAllLoading] = useState(false);
   const [dbOptimizing, setDbOptimizing] = useState(false);
   const [rejudgingId, setRejudgingId] = useState<number | null>(null);
@@ -126,13 +128,15 @@ export default function Admin() {
     } catch { toast.error('删除失败'); }
   };
 
-  const fetchAllSubmissions = async () => {
+  const fetchAllSubmissions = async (p = 1) => {
     setAllLoading(true);
     try {
       const token = localStorage.getItem('oj_token');
-      const res = await fetch('/api/submissions/admin/all', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await fetch(`/api/submissions/admin/all?page=${p}&limit=20`, { headers: { Authorization: `Bearer ${token}` } });
       const data = await res.json();
       setAllSubmissions(data.submissions || []);
+      setAllTotalPages(data.totalPages || 0);
+      setAllPage(p);
     } catch { toast.error('加载失败'); }
     finally { setAllLoading(false); }
   };
@@ -559,50 +563,65 @@ export default function Admin() {
           <Activity className="w-5 h-5 text-cyan-400" /> 所有提交
         </h2>
         {allSubmissions.length === 0 ? (
-          <button onClick={fetchAllSubmissions} className="btn-secondary text-sm inline-flex items-center gap-2">
-            {allLoading && <Loader2 className="w-4 h-4 animate-spin" />}
-            加载提交记录
-          </button>
+          <div className="flex items-center gap-2">
+            <button onClick={() => fetchAllSubmissions(1)} className="btn-secondary text-sm inline-flex items-center gap-2" disabled={allLoading}>
+              {allLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Activity size={16} />}
+              {allLoading ? '加载中...' : '加载提交记录'}
+            </button>
+          </div>
         ) : (
-          <div className="overflow-x-auto max-h-96 overflow-y-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-dark-700">
-                  <th className="text-left py-2 px-3 text-dark-400">ID</th>
-                  <th className="text-left py-2 px-3 text-dark-400">用户</th>
-                  <th className="text-left py-2 px-3 text-dark-400">题目</th>
-                  <th className="text-left py-2 px-3 text-dark-400">状态</th>
-                  <th className="text-left py-2 px-3 text-dark-400 hidden md:table-cell">时间</th>
-                  <th className="text-center py-2 px-3 text-dark-400">操作</th>
-                </tr>
-              </thead>
-              <tbody>
-                {allSubmissions.map((s: any) => (
-                  <tr key={s.id} className="border-b border-dark-800 hover:bg-dark-800/50">
-                    <td className="py-2 px-3 text-dark-400">{s.id}</td>
-                    <td className="py-2 px-3 text-white">{s.username}</td>
-                    <td className="py-2 px-3">
-                      <Link to={`/problems/${s.problem_id}`} className="text-blue-400 hover:text-blue-300">
-                        {s.problem_title || `#${s.problem_id}`}
-                      </Link>
-                    </td>
-                    <td className="py-2 px-3">
-                      <SubmissionStatus status={s.status} score={s.score} />
-                    </td>
-                    <td className="py-2 px-3 text-dark-400 hidden md:table-cell text-xs">{s.created_at?.slice(0, 16).replace('T', ' ')}</td>
-                    <td className="py-2 px-3 text-center">
-                      <button
-                        onClick={() => handleRejudge(s.id)}
-                        disabled={rejudgingId === s.id}
-                        className="text-xs text-cyan-400 hover:text-cyan-300 disabled:opacity-50 transition-colors"
-                      >
-                        {rejudgingId === s.id ? <Loader2 className="w-3.5 h-3.5 animate-spin mx-auto" /> : '重判'}
-                      </button>
-                    </td>
+          <div>
+            <div className="overflow-x-auto max-h-96 overflow-y-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-dark-700">
+                    <th className="text-left py-2 px-3 text-dark-400">ID</th>
+                    <th className="text-left py-2 px-3 text-dark-400">用户</th>
+                    <th className="text-left py-2 px-3 text-dark-400">题目</th>
+                    <th className="text-left py-2 px-3 text-dark-400">状态</th>
+                    <th className="text-left py-2 px-3 text-dark-400 hidden md:table-cell">时间</th>
+                    <th className="text-center py-2 px-3 text-dark-400">操作</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {allSubmissions.map((s: any) => (
+                    <tr key={s.id} className="border-b border-dark-800 hover:bg-dark-800/50">
+                      <td className="py-2 px-3 text-dark-400">{s.id}</td>
+                      <td className="py-2 px-3 text-white">{s.username}</td>
+                      <td className="py-2 px-3">
+                        <Link to={`/problems/${s.problem_id}`} className="text-blue-400 hover:text-blue-300">
+                          {s.problem_title || `#${s.problem_id}`}
+                        </Link>
+                      </td>
+                      <td className="py-2 px-3">
+                        <SubmissionStatus status={s.status} score={s.score} />
+                      </td>
+                      <td className="py-2 px-3 text-dark-400 hidden md:table-cell text-xs">{s.created_at?.slice(0, 16).replace('T', ' ')}</td>
+                      <td className="py-2 px-3 text-center">
+                        <button
+                          onClick={() => handleRejudge(s.id)}
+                          disabled={rejudgingId === s.id}
+                          className="text-xs text-cyan-400 hover:text-cyan-300 disabled:opacity-50 transition-colors"
+                        >
+                          {rejudgingId === s.id ? <Loader2 className="w-3.5 h-3.5 animate-spin mx-auto" /> : '重判'}
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {allTotalPages > 1 && (
+              <div className="flex items-center justify-center gap-2 mt-4">
+                <button onClick={() => fetchAllSubmissions(allPage - 1)} disabled={allPage <= 1} className="btn-secondary text-xs px-2 py-1 disabled:opacity-30">
+                  <ChevronLeft size={14} />
+                </button>
+                <span className="text-xs text-dark-400">{allPage} / {allTotalPages}</span>
+                <button onClick={() => fetchAllSubmissions(allPage + 1)} disabled={allPage >= allTotalPages} className="btn-secondary text-xs px-2 py-1 disabled:opacity-30">
+                  <ChevronRight size={14} />
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>
