@@ -44,7 +44,7 @@ function login(req, res) {
 }
 
 function getProfile(req, res) {
-  const user = queryOne('SELECT id, username, email, role, created_at FROM users WHERE id = ?', [req.user.id]);
+  const user = queryOne('SELECT id, username, email, role, created_at, last_login FROM users WHERE id = ?', [req.user.id]);
   if (!user) return res.status(404).json({ error: '用户不存在' });
 
   const totalRow = queryOne('SELECT COUNT(*) as count FROM submissions WHERE user_id = ?', [req.user.id]);

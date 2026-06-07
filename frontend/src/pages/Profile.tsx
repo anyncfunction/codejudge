@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { User, Mail, Shield, Award, TrendingUp, Loader2, AlertTriangle, CheckCircle2, XCircle, Clock, Zap, Lock, Key, CalendarDays, Code, PieChart, Trash2, Trophy } from 'lucide-react';
+import { User, Mail, Shield, Award, TrendingUp, Loader2, AlertTriangle, CheckCircle2, XCircle, Clock, Zap, Lock, Key, CalendarDays, Code, PieChart, Trash2, Trophy, LogIn } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import toast from 'react-hot-toast';
@@ -184,11 +184,27 @@ export default function Profile() {
                 <Mail className="w-3.5 h-3.5" />
                 {profile.email || user.email}
               </span>
-              <span className="flex items-center gap-1.5">
-                <Shield className="w-3.5 h-3.5" />
-                {profile.role === 'admin' ? '管理员' : '用户'}
-              </span>
-              {profile.created_at && (
+                <span className="flex items-center gap-1.5">
+                  <Shield className="w-3.5 h-3.5" />
+                  {profile.role === 'admin' ? '管理员' : '用户'}
+                </span>
+                {profile.last_login && (
+                  <span className="flex items-center gap-1.5" title={profile.last_login}>
+                    <LogIn className="w-3.5 h-3.5" />
+                    上次登录 {(() => {
+                      const diff = Date.now() - new Date(profile.last_login).getTime();
+                      const mins = Math.floor(diff / 60000);
+                      if (mins < 1) return '刚刚';
+                      if (mins < 60) return `${mins}分钟前`;
+                      const hours = Math.floor(mins / 60);
+                      if (hours < 24) return `${hours}小时前`;
+                      const days = Math.floor(hours / 24);
+                      if (days < 30) return `${days}天前`;
+                      return profile.last_login.slice(0, 10);
+                    })()}
+                  </span>
+                )}
+                {profile.created_at && (
                 <span className="flex items-center gap-1.5">
                   <Award className="w-3.5 h-3.5" />
                   加入于 {formatDate(profile.created_at)}
