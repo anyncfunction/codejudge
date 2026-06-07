@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Code2, User, LogOut, ShieldCheck, Dices, Menu, X, Activity, Hash } from 'lucide-react';
+import { Code2, LogOut, ShieldCheck, Dices, Menu, X, Activity, Hash } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export default function Navbar() {
@@ -147,7 +147,12 @@ export default function Navbar() {
               <hr className="border-dark-700 my-2" />
               {user ? (
                 <>
-                  <span className="block px-4 py-2 text-sm text-dark-300">{user.username}</span>
+                  <div className="flex items-center gap-3 px-4 py-2">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-purple-500 flex items-center justify-center text-white text-xs font-bold shrink-0">
+                      {user.username.charAt(0).toUpperCase()}
+                    </div>
+                    <span className="text-sm text-dark-200 font-medium">{user.username}</span>
+                  </div>
                   {user.role === 'admin' && <Link to="/admin" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-2 text-sm text-primary-400">管理中心</Link>}
                   <button onClick={() => { logout(); setMobileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-sm text-dark-400">退出登录</button>
                 </>
@@ -165,7 +170,9 @@ export default function Navbar() {
           {user ? (
             <>
               <Link to="/profile" className="flex items-center gap-2 text-dark-300 hover:text-white transition-colors">
-                <User className="w-4 h-4" />
+                <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary-500 to-purple-500 flex items-center justify-center text-white text-xs font-bold shrink-0">
+                  {user.username.charAt(0).toUpperCase()}
+                </div>
                 <span className="text-sm font-medium">{user.username}</span>
               </Link>
               {user.role === 'admin' && (<>
