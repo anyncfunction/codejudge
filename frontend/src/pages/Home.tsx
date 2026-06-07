@@ -7,6 +7,7 @@ import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import ProblemCard from '../components/ProblemCard';
 import SubmissionStatus from '../components/SubmissionStatus';
 import type { ProblemStats, Problem } from '../types';
+import { formatTimeAgo } from '../utils';
 
 function AnimatedNumber({ target }: { target: number }) {
   const [count, setCount] = useState(0);
@@ -225,7 +226,7 @@ export default function Home() {
                 >
                   <SubmissionStatus status={s.status} score={s.score} />
                   <span className="flex-1 text-white text-sm truncate">{s.problem_title}</span>
-                  <span className="text-xs text-dark-400">{s.created_at?.slice(0, 16).replace('T', ' ')}</span>
+                  <span className="text-xs text-dark-400">{formatTimeAgo(s.created_at)}</span>
                 </Link>
               ))
             )}

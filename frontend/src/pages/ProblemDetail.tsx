@@ -28,6 +28,7 @@ import FillBlankQuestion from '../components/FillBlankQuestion';
 import SubmissionStatus from '../components/SubmissionStatus';
 import MarkdownRenderer from '../components/MarkdownRenderer';
 import type { Problem, Submission, TestCaseResult } from '../types';
+import { formatTimeAgo } from '../utils';
 import { useBookmarks } from '../context/BookmarkContext';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
@@ -753,7 +754,7 @@ export default function ProblemDetail() {
                   {recentSubs.map(s => (
                     <Link key={s.id} to={`/submissions`} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-dark-700/50 transition-colors text-xs">
                       <SubmissionStatus status={s.status} score={s.score} />
-                      <span className="text-dark-400">{s.created_at?.slice(0, 16).replace('T', ' ')}</span>
+                      <span className="text-dark-400">{formatTimeAgo(s.created_at)}</span>
                     </Link>
                   ))}
                 </div>
