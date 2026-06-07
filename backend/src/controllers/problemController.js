@@ -1,7 +1,7 @@
 const { queryAll, queryOne, run, getSafeDb, saveDb } = require('../config/db');
 
 function listProblems(req, res) {
-  const { type, difficulty, search, page = 1, limit = 20, sort } = req.query;
+  const { type, difficulty, search, page = 1, limit = 20, sort, untried } = req.query;
   let sql = 'SELECT id, title, type, difficulty, tags, accepted_count, submission_count FROM problems WHERE 1=1';
   let countSql = 'SELECT COUNT(*) as count FROM problems WHERE 1=1';
   let conditions = '';
@@ -17,6 +17,10 @@ function listProblems(req, res) {
       params.push(Number(search));
     }
     conditions += ')';
+  }
+  if (untried === 'true' && req.user) {
+    conditions += ' AND id NOT IN (SELECT problem_id FROM submissions WHERE user_id = ?)';
+    params.push(req.user.id);
   }
 
   const total = queryOne(countSql + conditions, params).count;

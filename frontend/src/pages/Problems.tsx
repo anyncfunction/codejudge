@@ -15,6 +15,7 @@ import {
   Tag,
   Star,
   ArrowUpDown,
+  HelpCircle,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../services/api';
@@ -54,6 +55,7 @@ export default function Problems() {
   const type = searchParams.get('type') || '';
   const difficulty = searchParams.get('difficulty') || '';
   const sort = searchParams.get('sort') || '';
+  const untried = searchParams.get('untried') === 'true';
   const page = parseInt(searchParams.get('page') || '1', 10);
 
   const [data, setData] = useState<PaginatedResponse<Problem> | null>(null);
@@ -115,6 +117,7 @@ export default function Problems() {
       if (difficulty) params.difficulty = difficulty;
       if (search) params.search = search;
       if (sort) params.sort = sort;
+      if (untried) params.untried = 'true';
 
       const res = await api.problems.list(params);
       setData(res);
@@ -342,6 +345,20 @@ export default function Problems() {
           <Star size={14} className={bookmarkFilter ? 'fill-white' : ''} />
           仅显示收藏
         </button>
+
+        {user && (
+          <button
+            onClick={() => updateParams({ untried: untried ? '' : 'true', page: '' })}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm transition-colors ${
+              untried
+                ? 'bg-violet-600 text-white'
+                : 'bg-dark-800 text-gray-300 hover:bg-dark-700'
+            }`}
+          >
+            <HelpCircle size={14} />
+            仅显示未尝试
+          </button>
+        )}
 
         <div className="flex items-center gap-1.5">
           <ArrowUpDown size={14} className="text-gray-500" />
