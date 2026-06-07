@@ -358,14 +358,37 @@ export default function Admin() {
                   <td className="py-2 px-3 text-white">{u.username}</td>
                   <td className="py-2 px-3 text-dark-300 hidden md:table-cell">{u.email}</td>
                   <td className="py-2 px-3 text-center">
-                    {u.role === 'admin' ? <Shield className="w-4 h-4 text-primary-400 mx-auto" /> : <span className="text-dark-400 text-xs">user</span>}
+                    {u.role === 'admin' ? (
+                      <Shield className="w-4 h-4 text-primary-400 mx-auto" />
+                    ) : (
+                      <span className="text-dark-400 text-xs">user</span>
+                    )}
                   </td>
                   <td className="py-2 px-3 text-dark-400 text-center hidden md:table-cell">{u.created_at?.slice(0, 10)}</td>
                   <td className="py-2 px-3 text-center">
                     {u.role !== 'admin' && (
-                      <button onClick={() => handleDeleteUser(u.id, u.username)} className="btn-danger text-xs px-2 py-1">
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
+                      <div className="flex items-center justify-center gap-1">
+                        <button
+                          onClick={async () => {
+                            try {
+                              const token = localStorage.getItem('oj_token');
+                              const res = await fetch(`/api/auth/admin/users/${u.id}`, {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                                body: JSON.stringify({ role: u.role === 'admin' ? 'user' : 'admin' }),
+                              });
+                              if (res.ok) { toast.success('角色已更新'); fetchData(); }
+                              else toast.error('更新失败');
+                            } catch { toast.error('更新失败'); }
+                          }}
+                          className="text-[10px] px-2 py-0.5 rounded bg-dark-700 text-dark-400 hover:text-white transition-colors"
+                        >
+                          {u.role === 'admin' ? '降为普通' : '设为管理员'}
+                        </button>
+                        <button onClick={() => handleDeleteUser(u.id, u.username)} className="btn-danger text-xs px-2 py-1">
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     )}
                   </td>
                 </tr>

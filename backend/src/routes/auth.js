@@ -102,4 +102,12 @@ router.delete('/admin/users/:id', authenticate, (req, res) => {
   res.json({ message: '用户已删除' });
 });
 
+router.put('/admin/users/:id', authenticate, (req, res) => {
+  if (req.user.role !== 'admin') return res.status(403).json({ error: '需要管理员权限' });
+  const { role } = req.body;
+  if (!['user', 'admin'].includes(role)) return res.status(400).json({ error: '无效角色' });
+  run('UPDATE users SET role = ? WHERE id = ?', [role, req.params.id]);
+  res.json({ message: '用户已更新' });
+});
+
 module.exports = router;
